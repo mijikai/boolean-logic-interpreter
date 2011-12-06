@@ -1,10 +1,95 @@
 #!/usr/bin/env python3
 
+import itertools
+
 UNARY = 'NOT',
 BINARY = 'AND', 'OR', 'XOR', 'IMPLIES', 'IFF'
 OPER = UNARY + BINARY
 LITERAL = frozenset({ 'T', 'F' })
 PRECEDENCE = {i:j for i, j in zip(OPER, range(len(OPER)))}
+
+class Tokenizer(object):
+    def __init__(self, string, keywords=frozenset({}), operators=frozenset({})):
+        self.ind = 0
+        self.keywords = keywords
+        self.operators = operators
+        self.string = string
+        self.WHITESPACE = " \n\r\t\b"
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.ind >= len(self.string):
+            raise StopIteration
+
+        for char in itertools.islice(self.string, self.ind, None):
+            if char in self.WHITESPACE:
+                self.ind += 1
+            else:
+                break
+
+        tok_funcs = [self.__opertok, self.__keywordtok, self.__ordinarytok]
+
+        for func in tok_funcs:
+            tok = func(self.ind)
+            if tok:
+                self.ind += len(tok)
+                return tok
+
+
+    def __opertok(self, ind):
+        operators = list(self.operators)
+        tok = []
+
+        for char, oper_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
+            if not operators or char in self.WHITESPACE:
+                break
+
+            matched = False
+            for oper, opers_ind in zip(operators[:], range(len(operators))):
+                if oper_ind < len(oper) and char == oper[oper_ind]:
+                    if not matched:
+                        tok.append(oper[oper_ind])
+                        matched = True
+                else:
+                    operators.remove(oper)
+
+        if not tok: return False
+        return ''.join(tok)
+
+    def __keywordtok(self, ind):
+        keywords = list(self.keywords)
+        tok = []
+
+        for char, key_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
+            if char in self.WHITESPACE:
+                break
+            elif not keywords:
+                return False
+
+            matched = False
+            for key, ind in zip(keywords[:], range(len(keywords))):
+                if key_ind < len(key) and char == key[key_ind]:
+                    if not matched:
+                        tok.append(key[key_ind])
+                        matched = True
+                else:
+                    keywords.remove(key)
+
+        if not tok: return False
+        return ''.join(tok)
+
+    def __ordinarytok(self, ind):
+        tok = []
+        for char, tok_ind in zip(itertools.islice(self.string, ind, None), itertools.count(ind)):
+            if char in self.WHITESPACE or self.__opertok(tok_ind):
+                return ''.join(tok)
+            tok.append(char)
+
+        if not tok: return False
+        return ''.join(tok)
+
 
 def tokenize(string):
     tokens = []

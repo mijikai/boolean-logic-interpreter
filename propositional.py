@@ -2,11 +2,11 @@
 
 import itertools
 
-UNARY = 'NOT',
-BINARY = 'AND', 'OR', 'XOR', 'IMPLIES', 'IFF'
+UNARY = '~',
+BINARY = '&', '|', '|^', '=>', '<=>'
 OPER = UNARY + BINARY
 LITERAL = frozenset({ 'T', 'F' })
-PRECEDENCE = {i:j for i, j in zip(OPER, range(len(OPER)))}
+PRECEDENCE = frozenset({i:j for i, j in zip(OPER, range(len(OPER)))})
 
 class Tokenizer(object):
     """Creates an iterable object that returns a token."""

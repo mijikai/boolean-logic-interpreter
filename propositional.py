@@ -9,9 +9,15 @@ LITERAL = frozenset({ 'T', 'F' })
 PRECEDENCE = {i:j for i, j in zip(OPER, range(len(OPER)))}
 
 class Tokenizer(object):
-    def __init__(self, string, keywords=frozenset({}), operators=frozenset({})):
+    """Creates an iterable object that returns a token."""
+    
+    def __init__(self, string, operators=frozenset({})):
+        if type(string) != str:
+            raise TypeError('string must be of type str')
+        elif type(operators) != frozenset:
+            raise TypeError('operators must be of type frozenset')
+
         self.ind = 0
-        self.keywords = keywords
         self.operators = operators
         self.string = string
         self.WHITESPACE = " \n\r\t\b"
@@ -20,6 +26,15 @@ class Tokenizer(object):
         return self
 
     def __next__(self):
+        """Returns the next token.
+
+        The token is a string from the current index up to (but not
+        including) a whitespace. If the string matches one of the item
+        in the operator set, token will be the longest possible match
+        and ignore the consideration whether the next character is a
+        whitespace or not."""
+
+        
         if self.ind >= len(self.string):
             raise StopIteration
 
@@ -29,7 +44,7 @@ class Tokenizer(object):
             else:
                 break
 
-        tok_funcs = [self.__opertok, self.__keywordtok, self.__ordinarytok]
+        tok_funcs = [self.__opertok, self.__ordinarytok]
 
         for func in tok_funcs:
             tok = func(self.ind)
@@ -39,9 +54,13 @@ class Tokenizer(object):
 
 
     def __opertok(self, ind):
+        """Returns the longest match from the operator set or False if
+        no match is found."""
+        
         operators = list(self.operators)
         tok = []
 
+#Loop over the string from ind and match the operators list in parallel.
         for char, oper_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
             if not operators or char in self.WHITESPACE:
                 break
@@ -58,29 +77,11 @@ class Tokenizer(object):
         if not tok: return False
         return ''.join(tok)
 
-    def __keywordtok(self, ind):
-        keywords = list(self.keywords)
-        tok = []
-
-        for char, key_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
-            if char in self.WHITESPACE:
-                break
-            elif not keywords:
-                return False
-
-            matched = False
-            for key, ind in zip(keywords[:], range(len(keywords))):
-                if key_ind < len(key) and char == key[key_ind]:
-                    if not matched:
-                        tok.append(key[key_ind])
-                        matched = True
-                else:
-                    keywords.remove(key)
-
-        if not tok: return False
-        return ''.join(tok)
-
     def __ordinarytok(self, ind):
+        """Returns a substring starting from ind up to a whitespace or a
+        beginning of one of the item in the operator set, otherwise
+        False if the string is composed of whitespaces."""
+
         tok = []
         for char, tok_ind in zip(itertools.islice(self.string, ind, None), itertools.count(ind)):
             if char in self.WHITESPACE or self.__opertok(tok_ind):
@@ -90,7 +91,21 @@ class Tokenizer(object):
         if not tok: return False
         return ''.join(tok)
 
+    def peek(self):
+        """Returns the next token but not update the index"""
+        tok = self.__next__()
+        self.ind -= len(tok)
+        return tok
 
+class BoolExpr(object):
+    def __init__(self):
+        pass
+
+"""def parser(string):
+    if type(string) != str:
+        raise ValueError('string must be of type str.')
+
+    tok_iter = Tokenizer(string, OPER)"""
 def tokenize(string):
     tokens = []
     stack = []

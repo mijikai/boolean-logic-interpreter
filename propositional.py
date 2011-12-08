@@ -60,7 +60,7 @@ class Tokenizer(object):
         operators = list(self.operators)
         tok = []
 
-#Loop over the string from ind and match the operators list in parallel.
+        #Loop over the string from ind and match the operators list in parallel.
         for char, oper_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
             if not operators or char in self.WHITESPACE:
                 break

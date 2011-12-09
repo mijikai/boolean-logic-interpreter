@@ -132,8 +132,10 @@ def parse(iterable, operation, preced):
     postfix form.
 
     iterable -> a iterable object that returns a single character string.
-    operation -> a dictionary type composed of keys unary and binary. These
-        keys will access a tuple composed of string.
+    operation -> a dictionary type composed of keys unary, binary, and
+        parenthesis. The unary and binary keys has a value of tuple
+        composed of strings and the parenthesis key has a value of dictionary
+        whose key is the open parenthesis and value is a close parenthesis.  
     preced -> a dictionary type whose keys are the valid operations and value
         corresponding to their precedence."""
     
@@ -142,43 +144,63 @@ def parse(iterable, operation, preced):
     stk_tok = []
     unary = operation['unary']
     binary = operation['binary']
-    tok_iter = Tokenizer(iterable, frozenset(preced))
+    operators = unary + binary
+    parenthesis = operation['parenthesis']
+    tok_iter = Tokenizer(iterable, frozenset(operators +
+        tuple(parenthesis.keys()) + tuple(parenthesis.values())))
 
     for tok in tok_iter:
-        if tok in unary:
+        if tok in parenthesis:
+            stk_oper.append(tok)
+        elif tok in list(parenthesis.values()):
+            close_paren = stk_oper.pop()
+            if parenthesis[close_paren] != tok:
+                raise SyntaxError
+
+            while stk_oper:
+                oper = stk_oper.pop()
+                if not oper in operators:
+                    break
+                stk_post.append(oper)
+        elif tok in unary:
             stk_oper.append(tok)
         elif tok in binary:
             if not stk_post:
                 raise SyntaxError
-
             elem = stk_post.pop()
-            while stk_post and elem in  oper and preced[tok] < preced[elem]:
+
+            while stk_post and elem in operators and preced[tok] < preced[elem]:
                 stk_oper.append(elem)
                 elem = stk_post.pop()
 
-            if elem in oper:
+            if elem in operators:
                 if preced[tok] < preced[elem]:
                     stk_oper.append(elem)
                 else:
                     stk_post.append(elem)
+            elif elem in parenthesis:
+                pass
             else:
                 stk_post.append(elem)
+                stk_oper.append(tok)
         else:
             if stk_oper:
                 oper = stk_oper.pop()
                 if oper in binary and not stk_post:
                     raise SyntaxError
 
-                stk_oper.append(oper) 
                 stk_post.append(tok)
 
-                while stk_oper:
+                while stk_oper and oper in operators:
+                    stk_post.append(oper)
                     oper = stk_oper.pop()
+
+                if oper in parenthesis:
+                    stk_oper.append(oper)
+                else:
                     stk_post.append(oper)
             else:
                 stk_post.append(tok)
-
-            stk_oper.append(tok)
 
     if stk_oper:
         raise SyntaxError

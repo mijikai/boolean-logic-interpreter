@@ -133,9 +133,7 @@ class Evaluator(object):
        raise StopIteration
 
 
-def parse(string, case_sensitive=False):
-    if not case_sensitive:
-        string = string.upper()
+def parse(string):
     tok_iter = Tokenizer(string, frozenset(OPER))
     stk_oper = []
     stk_post = []

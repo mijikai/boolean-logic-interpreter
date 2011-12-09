@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import itertools
+import inspect
 
 UNARY = '~',
 BINARY = '&', '|', '|^', '=>', '<=>'
@@ -96,9 +97,40 @@ class Tokenizer(object):
         return tok
 
 
-class BoolExpr(object):
-   def __init__(self):
-        pass
+class Evaluator(object):
+   def __init__(self, postExpr, funcs, vars={}):
+       self.postExpr = list(postExpr)
+       self.funcs = dict(funcs)
+       self.vars = dict(vars)
+
+   def __iter__(self):
+       stk_opern = []
+       stk_oper = []
+
+       for i in self.postExpr[:]:
+           if i in self.funcs:
+               func = self.funcs[i]
+               arg = []
+               arglen = len(inspect.getfullargspec(func)[0])
+
+               for j in range(arglen):
+                   arg.append(stk_opern.pop())
+
+               arg.reverse()
+               value = func(*arg)
+               stk_opern.append(value)
+
+               yield value
+           elif i in self.vars:
+               value = self.vars[i]
+               stk_opern.append(value)
+               yield value
+           else:
+               stk_opern.append(i)
+
+       if len(stk_opern) != 1:
+           raise Exception
+       raise StopIteration
 
 
 def parse(string, case_sensitive=False):

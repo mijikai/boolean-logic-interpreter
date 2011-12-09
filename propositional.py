@@ -3,12 +3,6 @@
 import itertools
 import inspect
 
-UNARY = '~',
-BINARY = '&', '|', '|^', '=>', '<=>'
-OPER = UNARY + BINARY
-LITERAL = 'T', 'F'
-PRECEDENCE = {i:j for i, j in zip(OPER, range(len(OPER)))}
-
 class Tokenizer(object):
     """Creates an iterable object that returns a token."""
     
@@ -133,17 +127,46 @@ class Evaluator(object):
        raise StopIteration
 
 
-def parse(string):
-    tok_iter = Tokenizer(string, frozenset(OPER))
+def parse(iterable, operation, preced):
+    """Parses the iterable object into a list whose elements are arrange in
+    postfix form.
+
+    iterable -> a iterable object that returns a single character string.
+    operation -> a dictionary type composed of keys unary and binary. These
+        keys will access a tuple composed of string.
+    preced -> a dictionary type whose keys are the valid operations and value
+        corresponding to their precedence."""
+    
     stk_oper = []
     stk_post = []
     stk_tok = []
+    unary = operation['unary']
+    binary = operation['binary']
+    tok_iter = Tokenizer(iterable, frozenset(preced))
 
     for tok in tok_iter:
-        if tok in LITERAL:
+        if tok in unary:
+            stk_oper.append(tok)
+        elif tok in binary:
+            if not stk_post:
+                raise SyntaxError
+
+            elem = stk_post.pop()
+            while stk_post and elem in  oper and preced[tok] < preced[elem]:
+                stk_oper.append(elem)
+                elem = stk_post.pop()
+
+            if elem in oper:
+                if preced[tok] < preced[elem]:
+                    stk_oper.append(elem)
+                else:
+                    stk_post.append(elem)
+            else:
+                stk_post.append(elem)
+        else:
             if stk_oper:
                 oper = stk_oper.pop()
-                if oper in BINARY and not stk_post:
+                if oper in binary and not stk_post:
                     raise SyntaxError
 
                 stk_oper.append(oper) 
@@ -154,24 +177,6 @@ def parse(string):
                     stk_post.append(oper)
             else:
                 stk_post.append(tok)
-        elif tok in UNARY:
-            stk_oper.append(tok)
-        elif tok in BINARY:
-            if not stk_post:
-                raise SyntaxError
-
-            elem = stk_post.pop()
-            while stk_post and elem in OPER and PRECEDENCE[tok] < PRECEDENCE[elem]:
-                stk_oper.append(elem)
-                elem = stk_post.pop()
-
-            if elem in LITERAL:
-                stk_post.append(elem)
-            elif elem in OPER:
-                if PRECEDENCE[tok] < PRECEDENCE[elem]:
-                    stk_oper.append(elem)
-                else:
-                    stk_post.append(elem)
 
             stk_oper.append(tok)
 

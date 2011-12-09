@@ -5,8 +5,8 @@ import itertools
 UNARY = '~',
 BINARY = '&', '|', '|^', '=>', '<=>'
 OPER = UNARY + BINARY
-LITERAL = frozenset({ 'T', 'F' })
-PRECEDENCE = frozenset({i:j for i, j in zip(OPER, range(len(OPER)))})
+LITERAL = 'T', 'F'
+PRECEDENCE = {i:j for i, j in zip(OPER, range(len(OPER)))}
 
 class Tokenizer(object):
     """Creates an iterable object that returns a token."""
@@ -101,8 +101,10 @@ class BoolExpr(object):
         pass
 
 
-def parse(string):
-    tok_iter = Tokenizer(string, OPER)
+def parse(string, case_sensitive=False):
+    if not case_sensitive:
+        string = string.upper()
+    tok_iter = Tokenizer(string, frozenset(OPER))
     stk_oper = []
     stk_post = []
     stk_tok = []

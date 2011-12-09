@@ -11,15 +11,13 @@ PRECEDENCE = frozenset({i:j for i, j in zip(OPER, range(len(OPER)))})
 class Tokenizer(object):
     """Creates an iterable object that returns a token."""
     
-    def __init__(self, string, operators=frozenset({})):
-        if type(string) != str:
-            raise TypeError('string must be of type str')
-        elif type(operators) != frozenset:
+    def __init__(self, iterable, operators=frozenset({})):
+        if type(operators) != frozenset:
             raise TypeError('operators must be of type frozenset')
 
         self.ind = 0
         self.operators = operators
-        self.string = string
+        self.iterable = iterable
         self.WHITESPACE = " \n\r\t\b"
 
     def __iter__(self):
@@ -35,10 +33,10 @@ class Tokenizer(object):
         whitespace or not."""
 
         
-        if self.ind >= len(self.string):
+        if self.ind >= len(self.iterable):
             raise StopIteration
 
-        for char in itertools.islice(self.string, self.ind, None):
+        for char in itertools.islice(self.iterable, self.ind, None):
             if char in self.WHITESPACE:
                 self.ind += 1
             else:
@@ -61,7 +59,7 @@ class Tokenizer(object):
         tok = []
 
         #Loop over the string from ind and match the operators list in parallel.
-        for char, oper_ind in zip(itertools.islice(self.string, ind, None), itertools.count()):
+        for char, oper_ind in zip(itertools.islice(self.iterable, ind, None), itertools.count()):
             if not operators or char in self.WHITESPACE:
                 break
 
@@ -83,7 +81,7 @@ class Tokenizer(object):
         False if the string is composed of whitespaces."""
 
         tok = []
-        for char, tok_ind in zip(itertools.islice(self.string, ind, None), itertools.count(ind)):
+        for char, tok_ind in zip(itertools.islice(self.iterable, ind, None), itertools.count(ind)):
             if char in self.WHITESPACE or self.__opertok(tok_ind):
                 return ''.join(tok)
             tok.append(char)
@@ -104,13 +102,12 @@ class BoolExpr(object):
 
 
 def parse(string):
-    tokens = tokenize(string)
+    tok_iter = Tokenizer(string, OPER)
     stk_oper = []
     stk_post = []
     stk_tok = []
 
-    while tokens:
-        tok = tokens.pop(0)
+    for tok in tok_iter:
         if tok in LITERAL:
             if stk_oper:
                 oper = stk_oper.pop()

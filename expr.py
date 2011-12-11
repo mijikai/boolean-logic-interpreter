@@ -54,8 +54,8 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
             else:
                 current_frame = None
 
-        subexpr.append(self)
         subexpr.reverse()
+        subexpr.append(self)
         return tuple(subexpr)
 
     def replaceexpr(self, expr, value, replaceall=False):

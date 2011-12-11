@@ -54,6 +54,7 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
             else:
                 current_frame = None
 
+        subexpr.append(self)
         subexpr.reverse()
         return tuple(subexpr)
 
@@ -100,7 +101,7 @@ def evaluate(expr, funcs, mapping={}):
     expr.arg1 or expr.arg2, and values which will be substitute when a key
         correspond to either expr.arg1 or expr.arg2."""
 
-    expr_list = expr.getsubexpr() + (expr,) 
+    expr_list = expr.getsubexpr()
     memo = {}
     results = []
 

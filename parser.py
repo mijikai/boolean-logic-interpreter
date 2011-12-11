@@ -27,7 +27,6 @@ class Tokenizer(object):
         and ignore the consideration whether the next character is a
         whitespace or not."""
 
-        
         if self.ind >= len(self.iterable):
             raise StopIteration
 
@@ -44,7 +43,6 @@ class Tokenizer(object):
             if tok:
                 self.ind += len(tok)
                 return tok
-
 
     def __opertok(self, ind):
         """Returns the longest match from the operator set or False if

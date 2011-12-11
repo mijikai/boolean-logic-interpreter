@@ -1,76 +1,41 @@
 #!/usr/bin/env python3
 
-import propositional
+import parser
 
-def testTokenize(): 
-    def testvalue(string, output):
-        try:
-            token = propositional.tokenize(string)
-            if token == output:
-                print('Passed:', repr(string))
-            else:
-                print('Failed:', repr(string), repr(token))
-        except Exception as ex:
-            print('Failed:', repr(string), ex)
+def testTokenizer():
+    tokenizer = propositional.Tokenizer("")
+    class Dummy(Exception): pass
 
-    def testfail(string, error):
+    def test(string, opers, values, exception=Dummy):
+        tokenizer.iterable = string
+        tokenizer.operators = opers
+        tokenizer.ind = 0
+        passed = True
+
         try:
-            propositional.tokenize(string)
-        except error:
-            print('Passed:', repr(string))
+            for token, value in zip(tokenizer, values):
+                if token != value:
+                    passed = False
+                    break
+
+        except exception as ex:
+            passed = True
         except Exception as ex:
-            print('Failed:', repr(string), ex)
+            passed = False
+
+        if passed:
+            print('Passed: string =', repr(string), ', opers =',  repr(opers), 
+                  ', values = ', repr(values))
         else:
-            print('Failed:', repr(string), 'No error')
+            print('Failed:', 'string =', repr(string), ', opers =', repr(opers), ',',
+                   repr(token), '!=', repr(value))
 
-    testvalue('T', ['T'])
-    testvalue('F', ['F'])
-    testvalue(' T \r\nF', ['T', 'F'])
-    testvalue('T and F', ['T', 'AND', 'F'])
-    testvalue('T oR F', ['T', 'OR', 'F'])
-    testvalue('F IMplIES F', ['F', 'IMPLIES', 'F'])
-    testvalue('F xOR T', ['F', 'XOR', 'T'])
-    testvalue('T IFF T', ['T', 'IFF', 'T'])
-    testvalue('NOT T', ['NOT', 'T'])
-    testvalue('(T)', [['T']])
-    testfail('a', SyntaxError)
-    testfail('(T', SyntaxError)
-    testfail(')', SyntaxError)
-    testfail('T AND ( T Or F))', SyntaxError)
-
-def testParse():
-    def testvalue(string, value):
-        try:
-            parsed = propositional.parse(string)
-            if parsed == value:
-                print('Passed:', repr(string))
-            else:
-                print('Failed:', repr(string), repr(parsed), '!=', repr(value))
-        except Exception as ex:
-            print('Failed:', repr(string), ex)
-
-    def testfail(string, error):
-        try:
-            parsed = propositional.parse(string)
-        except error:
-            print('Passed:', repr(string), repr(error))
-        except Exception as ex:
-            print('Failed:', repr(string), ex)
-        else:
-            print('Failed:', repr(string), repr(error))
-
-    testvalue('T', ['T'])
-    testvalue('T and F', ['T', 'F', 'AND'])
-    testvalue('T and not F', ['T', 'F', 'NOT', 'AND'])
-    testvalue('T and F and T', ['T', 'F', 'AND', 'T', 'AND' ])
-    testvalue('T and T or T', ['T', 'T', 'AND', 'T', 'OR'])
-    testvalue('T or F and T', ['T', 'F', 'T', 'AND', 'OR'])
-    testvalue('t and not f or not f and t', ['T', 'F', 'NOT', 'AND', 'F', 'NOT', 'T', 'AND', 'OR'])
-    testvalue('not not not not t', ['T', 'NOT', 'NOT', 'NOT', 'NOT'])
-    testfail('and t', SyntaxError)
-    testfail('t and f or', SyntaxError)
-    testfail('not', SyntaxError)
+    test('', frozenset([]), [])
+    test('2', frozenset([]), ['2'])
+    test('2 e\t4\n5\r6', frozenset([]), ['2', 'e', '4', '5', '6'])
+    test('2*3', frozenset(['*']), ['2', '*', '3'])
+    test('2*3 +4 -5*6', frozenset(['+', '-', '*']),
+        ['2', '*', '3', '+', '4', '-', '5', '*', '6'])
 
 if __name__ == '__main__':
-    testTokenize()
-    testParse()
+    testTokenizer()

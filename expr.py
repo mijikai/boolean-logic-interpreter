@@ -74,6 +74,8 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
                         args.append(value)
                     elif arg in stored_value:
                         args.append(stored_value[arg])
+                    else:
+                        args.append(arg)
                 else:
                     args.append(arg)
 

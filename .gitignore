@@ -3,3 +3,5 @@ __pycache__
 #vim swap files
 *.swp
 *.swo
+#ctags
+tags

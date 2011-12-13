@@ -58,7 +58,7 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
         subexpr.append(self)
         return tuple(subexpr)
 
-    def replaceexpr(self, expr, value, replaceall=False):
+    def replace_expr(self, expr, value, replaceall=False):
         subexpr_tuple = self.getsubexpr()
         stored_value = {}
         has_matched = False

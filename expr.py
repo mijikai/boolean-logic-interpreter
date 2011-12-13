@@ -61,28 +61,36 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
     def replaceexpr(self, expr, value, replaceall=False):
         subexpr_tuple = self.getsubexpr()
         stored_value = {}
+        has_matched = False
 
         for curr in subexpr_tuple:
-            if curr == expr and (replaceall or not curr in stored_value):
+            if curr == expr:
                 stored_value[curr] = value
                 continue
 
             args = [curr.oper]
+            found = False
+
             for arg in (curr.arg1, curr.arg2):
-                if replaceall or not curr in stored_value:
-                    if arg == expr:
+                if arg == expr:
+                    if not has_matched or replaceall:
+                        found = True
                         args.append(value)
-                    elif arg in stored_value:
-                        args.append(stored_value[arg])
-                    else:
-                        args.append(arg)
+                    has_matched = True
+                elif arg in stored_value:
+                    found = True
+                    args.append(stored_value[arg])
+                    if not replaceall:
+                        del stored_value[arg]
                 else:
                     args.append(arg)
 
-            stored_value[curr] = Expression(*args)
+            if found:
+                stored_value[curr] = Expression(*args)
 
-        return stored_value[self]
-
+        if self in stored_value:
+            return stored_value[self]
+        return self
 
     def __str__(self):
         string = '(' + str(self.oper) + ' ' + str(self.arg1)

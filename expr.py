@@ -92,6 +92,7 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
             return stored_value[self]
         return self
 
+
 def evaluate(expr, funcs, mapping={}):
     """Returns a list of tuples composed of Expression object and result.
 

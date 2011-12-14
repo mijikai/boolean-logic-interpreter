@@ -126,3 +126,39 @@ def evaluate(expr, funcs, mapping={}):
 
     return results
 
+def evaluate2(expr, funcs, mapping={}):
+    memo = {}
+    memo_eval = {}
+    results = []
+
+    for var in mapping:
+        expr = expr.replace_expr(var, mapping[var], True)
+
+    for curr_frame in expr.getsubexpr():
+        if curr_frame in memo:
+            expr = expr.replace_expr(curr_frame, memo[curr_frame])
+            results.append(expr)
+            continue
+
+        args = [curr_frame.arg1, curr_frame.arg2]
+
+        for ind, arg in zip(range(len(args)), args):
+            if arg in memo:
+                args[ind] = memo[arg]
+
+        if args[1] == None:
+            del args[1]
+
+        ans = funcs[curr_frame.oper](*args)
+        memo[curr_frame] = ans
+        expr = expr.replace_expr(curr_frame, ans)
+
+        if expr in memo_eval:
+            expr = memo_eval[expr]
+        else:
+            memo_eval[expr] = ans
+
+        results.append(expr)
+
+    return results
+

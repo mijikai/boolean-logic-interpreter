@@ -110,22 +110,16 @@ def evaluate(expr, funcs, mapping={}):
         if curr_frame in memo:
             continue
 
-        arg1 = curr_frame.arg1
-        arg2 = curr_frame.arg2
+        args = [curr_frame.arg1, curr_frame.arg2]
 
-        if arg1 in memo:
-            arg1 = memo[arg1]
-        elif arg1 in mapping:
-            arg1 = mapping[arg1]
+        for ind, arg in zip(range(len(args)), args):
+            if arg in memo:
+                args[ind] = memo[arg]
+            elif arg in mapping:
+                args[ind] = mapping[arg]
 
-        if arg2 in memo:
-            arg2 = memo[arg2]
-        elif arg2 in mapping:
-            arg2 = mapping[arg2]
-        if arg2 == None:
-            args = (arg1,)
-        else:
-            args = (arg1, arg2)
+        if args[1] == None:
+            del args[1]
 
         memo[curr_frame] = funcs[curr_frame.oper](*args)
         results.append((curr_frame, memo[curr_frame]))

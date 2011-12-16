@@ -133,9 +133,6 @@ def evaluate(expr, funcs, mapping={}):
             elif arg in mapping:
                 args[ind] = mapping[arg]
 
-        if args[1] == None:
-            del args[1]
-
         memo[curr_frame] = funcs[curr_frame.oper](*args)
         results.append((curr_frame, memo[curr_frame]))
 

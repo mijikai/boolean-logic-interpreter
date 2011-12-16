@@ -142,6 +142,22 @@ def evaluate(expr, funcs, mapping={}):
     return results
 
 def evaluate2(expr, funcs, mapping={}):
+    """Returns a list of expressions. The list begins with the original
+    expression pass and ends with the answer to the evaluation. The
+    expressions between the first and the last are sequences which leads
+    the first to the last.
+
+    Example:
+    >>> a = Expression('+', 3, 2)
+    >>> b = Expression('-', 7, 4)
+    >>> c = Expression('*', a, b)
+    >>> for i in evaluate2(c, funcs): print(i)
+    (* (+ 3 2) (- 7 4))
+    (* 5 (- 7 4))
+    (* 5 3)
+    15
+    """
+
     memo = {}
     results = []
     type_expr = type(expr)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import collections
+import collections as _collections
 
-class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])):
+class Expression(_collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])):
     """Returns a tuple (oper, arg1, arg2)
 
     oper, arg1 and arg2 can be of any immutable type. oper and arg1 must not

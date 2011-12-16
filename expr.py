@@ -69,7 +69,7 @@ class Expression(collections.namedtuple('Expression', ['oper', 'arg1', 'arg2']))
         >>> a = Expression('+', 'a', 'b')
         >>> b = Expression('*', 'a', 'b')
         >>> c = Expression('-', a, b)
-        >>> c.replace_all(a, 3) == Expression('-', 3, b)
+        >>> c.replace_expr(a, 3) == Expression('-', 3, b)
         True
         """
         

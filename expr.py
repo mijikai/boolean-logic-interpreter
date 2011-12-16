@@ -129,35 +129,41 @@ def evaluate(expr, funcs, mapping={}):
 
 def evaluate2(expr, funcs, mapping={}):
     memo = {}
-    memo_eval = {}
     results = []
+    type_expr = type(expr)
+    orig_expr = expr
+
+    results.append(expr)
 
     for var in mapping:
         expr = expr.replace_expr(var, mapping[var], True)
 
+    if orig_expr != expr:
+        results.append(expr)
+
     for curr_frame in expr.getsubexpr():
         if curr_frame in memo:
-            expr = expr.replace_expr(curr_frame, memo[curr_frame])
+            expr = expr.replace_expr(curr_frame, memo[curr_frame], True)
             results.append(expr)
             continue
 
         args = [curr_frame.arg1, curr_frame.arg2]
 
-        for ind, arg in zip(range(len(args)), args):
+        args_equiv = []
+        for arg in args[:]:
             if arg in memo:
-                args[ind] = memo[arg]
+                args_equiv.append(memo[arg])
+            else:
+                args_equiv.append(arg)
 
-        if args[1] == None:
-            del args[1]
+        answer = funcs[curr_frame.oper](*args_equiv)
+        memo[curr_frame] = answer
 
-        ans = funcs[curr_frame.oper](*args)
-        memo[curr_frame] = ans
-        expr = expr.replace_expr(curr_frame, ans)
-
-        if expr in memo_eval:
-            expr = memo_eval[expr]
+        eqv = Expression(curr_frame.oper, *args_equiv)
+        if curr_frame == eqv:
+            expr = expr.replace_expr(curr_frame, answer, True)
         else:
-            memo_eval[expr] = ans
+            expr = expr.replace_expr(eqv, answer, True)
 
         results.append(expr)
 

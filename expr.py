@@ -173,7 +173,7 @@ def evaluate2(expr, funcs, mapping={}):
 
     for curr_frame in expr.getsubexpr():
         if curr_frame in memo:
-            expr = expr.replace_expr(curr_frame, memo[curr_frame], True)
+            expr = expr.replace_expr(curr_frame, memo[curr_frame])
             results.append(expr)
             continue
 
@@ -191,9 +191,9 @@ def evaluate2(expr, funcs, mapping={}):
 
         eqv = Expression(curr_frame.oper, *args_equiv)
         if curr_frame == eqv:
-            expr = expr.replace_expr(curr_frame, answer, True)
+            expr = expr.replace_expr(curr_frame, answer)
         else:
-            expr = expr.replace_expr(eqv, answer, True)
+            expr = expr.replace_expr(eqv, answer)
 
         results.append(expr)
 

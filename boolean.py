@@ -125,37 +125,3 @@ if __name__ == '__main__':
 
     import doctest
     doctest.testmod()
-
-    truth_combination = ((TRUE, TRUE),
-            (TRUE, FALSE),
-            (FALSE, TRUE),
-            (FALSE, FALSE))
-
-    truth_result_not = (FALSE, TRUE)
-    truth_result = {
-            AND: (TRUE, FALSE, FALSE, FALSE),
-            OR: (TRUE, TRUE, TRUE, FALSE),
-            XOR: (FALSE, TRUE, TRUE, FALSE),
-            IF: (TRUE, FALSE, TRUE, TRUE),
-            IFF: (TRUE, FALSE, FALSE, TRUE)}
-
-    for arg, expected_result in zip((TRUE, FALSE), (FALSE, TRUE)):
-        value = not_(arg)
-        if value == expected_result:
-            print('Passed: ', end='')
-        else:
-            print('Failed: ', end='')
-        print(not_.__name__, arg, '=>', value, ':', expected_result)
-
-    for oper in truth_result:
-        results = truth_result[oper]
-        bool_func = bool_funcs_dict[oper]
-
-        for args, expected_result in zip(truth_combination, results):
-            value = bool_func(*args)
-            if expected_result == value:
-                print('Passed: ', end='')
-            else:
-                print('Failed: ', end='')
-            print(bool_func.__name__, args, '=>', value, ':',
-                    expected_result)

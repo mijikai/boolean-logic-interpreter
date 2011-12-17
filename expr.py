@@ -11,20 +11,38 @@ class Expression(_collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])
     def __new__(cls, oper, arg1, arg2=None):
         return super().__new__(cls, oper, arg1, arg2)
 
+    def __str__(self):
+        string = '(' + str(self.oper) + ' ' + str(self.arg1)
+        if self.arg2 != None:
+            string += ' ' + str(self.arg2)
+        string += ')'
+        return string
+        
     def getsubexpr(self):
-        """Returns a tuple composed of Expression objects. If the object has a
+        r"""Returns a tuple composed of Expression objects. If the object has a
         depth h, the first elements of the tuple are the nodes of the root at
         level h, the next elements are the nodes at depth h - 1, and so on. The
         order is arg1 first before arg2
 
-        Example:
+        Examples:
         >>> a = Expression('+', 2, 3)
-        >>> b = Expression('+', 4, 5)
-        >>> c = Expression('-', a, b)
-        >>> d = Expression('-', b, a)
-        >>> e = Expression('*', c, d)
-        >>> e.getsubexpr() == (a, b, b, a, c, d)
-        True
+        >>> print(*a.getsubexpr(), sep='\n')
+        (+ 2 3)
+        >>> b = Expression('+', a, 4)
+        >>> print(*b.getsubexpr(), sep='\n')
+        (+ 2 3)
+        (+ (+ 2 3) 4)
+        >>> c = Expression('-', 5, a)
+        >>> print(*c.getsubexpr(), sep='\n')
+        (+ 2 3)
+        (- 5 (+ 2 3))
+        >>> d = Expression('*', b, c)
+        >>> print(*d.getsubexpr(), sep='\n')
+        (+ 2 3)
+        (+ 2 3)
+        (+ (+ 2 3) 4)
+        (- 5 (+ 2 3))
+        (* (+ (+ 2 3) 4) (- 5 (+ 2 3)))
         """
 
         stack = []
@@ -145,6 +163,9 @@ def evaluate2(expr, funcs, mapping={}):
     the first to the last.
 
     Example:
+    >>> funcs = {'+': lambda x, y: x + y,
+    ...     '-': lambda x, y: x - y,
+    ...     '*': lambda x, y: x * y}
     >>> a = Expression('+', 3, 2)
     >>> b = Expression('-', 7, 4)
     >>> c = Expression('*', a, b)
@@ -196,3 +217,6 @@ def evaluate2(expr, funcs, mapping={}):
 
     return results
 
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

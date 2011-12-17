@@ -3,7 +3,7 @@
 import parser
 
 def testTokenizer():
-    tokenizer = propositional.Tokenizer("")
+    tokenizer = parser.Tokenizer("")
     class Dummy(Exception): pass
 
     def test(string, opers, values, exception=Dummy):

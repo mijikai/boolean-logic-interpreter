@@ -11,6 +11,14 @@ IFF = '<=>'
 LITERALS = (TRUE, FALSE)
 UNARY = (NOT)
 BINARY = (AND, OR, XOR, IF, IFF)
+OPERATORS = tuple(list(UNARY) + list(BINARY))
+PRECEDENCE = (
+        (NOT),
+        (AND),
+        (OR),
+        (XOR),
+        (IF),
+        (IFF)) 
 
 def args_literal_check(func):
     def checker(*args, **kwargs):

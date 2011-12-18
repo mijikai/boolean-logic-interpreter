@@ -8,7 +8,7 @@ OR = '|'
 XOR = '^'
 IF = '=>'
 IFF = '<=>'
-LITERALS = (TRUE, FALSE)
+CONSTANTS = (TRUE, FALSE)
 UNARY = (NOT)
 BINARY = (AND, OR, XOR, IF, IFF)
 OPERATORS = tuple(list(UNARY) + list(BINARY))
@@ -23,7 +23,7 @@ PRECEDENCE = (
 def args_literal_check(func):
     def checker(*args, **kwargs):
         for arg in args:
-            if arg not in LITERALS:
+            if arg not in CONSTANTS:
                 raise ValueError('invalid argument given for ' + checker.__name__ + ': ' + str(arg))
         return func(*args, **kwargs)
 

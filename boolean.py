@@ -139,7 +139,7 @@ bool_funcs_dict = {NOT: not_,
 
 if __name__ == '__main__':
     if TRUE == FALSE:
-        raise ValueError('TRUE value equals FALSE.')
+        raise Exception('TRUE value equals FALSE: ' + repr(TRUE) + ' == ' + repr(FALSE))
 
     import doctest
     doctest.testmod()

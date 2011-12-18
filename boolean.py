@@ -16,7 +16,7 @@ def check_if_literal(func):
     def checker(*args, **kwargs):
         for arg in args:
             if arg not in LITERALS:
-                raise Exception
+                raise ValueError('invalid argument given for ' + checker.__name__ + ': ' + str(arg))
         return func(*args, **kwargs)
 
     checker.__name__ = func.__name__

@@ -13,12 +13,12 @@ UNARY = (NOT)
 BINARY = (AND, OR, XOR, IF, IFF)
 OPERATORS = tuple(list(UNARY) + list(BINARY))
 PRECEDENCE = (
-        (NOT),
-        (AND),
-        (OR),
-        (XOR),
-        (IF),
-        (IFF)) 
+        (NOT,),
+        (AND,),
+        (OR,),
+        (XOR,),
+        (IF,),
+        (IFF,)) 
 
 def args_constant_check(func):
     def checker(*args, **kwargs):
@@ -138,12 +138,15 @@ def iff(x, y):
     res_and = and_(x, y)
     return res_and if res_and == TRUE else not_(or_(x, y))
 
-bool_funcs_dict = {NOT: not_,
+bool_funcs_dict = {
+        NOT: not_,
         AND: and_,
         OR: or_,
         XOR: xor,
         IF: if_,
-        IFF: iff}
+        IFF: iff
+        }
+
 
 if __name__ == '__main__':
     if TRUE == FALSE:

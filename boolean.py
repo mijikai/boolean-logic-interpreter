@@ -24,7 +24,20 @@ def args_literal_check(func):
 
     return checker
 
+def return_literal_check(func):
+    def checker(*args, **kwargs):
+        return_value = func(*args, **kwargs)
+        if return_value not in LITERALS:
+            raise Exception('invalid return value for ' + checker.__name__ + ': ' + str(return_value))
+        return return_value
+
+    checker.__name__ = func.__name__
+    checker.__doc__ = func.__doc__
+
+    return checker
+
 @args_literal_check
+@return_literal_check
 def not_(x):
     """Returns the value of TRUE if x is FALSE else FALSE
 
@@ -36,6 +49,7 @@ def not_(x):
     return TRUE if x == FALSE else FALSE
 
 @args_literal_check
+@return_literal_check
 def and_(x, y):
     """Returns the value of TRUE if both x and y are TRUE else FALSE
 
@@ -51,6 +65,7 @@ def and_(x, y):
     return x if x == FALSE else y
 
 @args_literal_check
+@return_literal_check
 def or_(x, y):
     """Returns the value of FALSE if neither x nor y are TRUE
 
@@ -66,6 +81,7 @@ def or_(x, y):
     return x if x == TRUE else y
 
 @args_literal_check
+@return_literal_check
 def xor(x, y):
     """Like or_ but returns FALSE if both are TRUE. Opposite of iff.
 
@@ -81,6 +97,7 @@ def xor(x, y):
     return not_(iff(x, y))
 
 @args_literal_check
+@return_literal_check
 def if_(x, y):
     """Returns the value of FALSE if x == TRUE and y == FALSE else TRUE
 
@@ -96,6 +113,7 @@ def if_(x, y):
     return TRUE if x != TRUE or y != FALSE else FALSE
 
 @args_literal_check
+@return_literal_check
 def iff(x, y):
     """Returns the VALUE of TRUE if the condition and its converse are
     TRUE. Opposite of xor.

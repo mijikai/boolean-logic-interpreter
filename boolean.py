@@ -35,7 +35,7 @@ def args_constant_check(func):
 def return_constant_check(func):
     def checker(*args, **kwargs):
         return_value = func(*args, **kwargs)
-        if return_value not in LITERALS:
+        if return_value not in CONSTANTS:
             raise Exception('invalid return value for ' + checker.__name__ + ': ' + str(return_value))
         return return_value
 

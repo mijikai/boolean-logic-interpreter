@@ -2,7 +2,7 @@
 
 from pyparsing import Word, Literal, Forward, OneOrMore, ZeroOrMore,\
     Or, MatchFirst, Group, StringEnd
-from boolean import UNARY, BINARY, OPERATORS, PRECEDENCE, CONSTANTS
+from boolean import NOOP, UNARY, BINARY, OPERATORS, PRECEDENCE, CONSTANTS
 from expression import Expression
 
 __all__ = ['parse']
@@ -22,8 +22,8 @@ def toExpression(s, loc, tok):
         stack.append(Expression(curr, *args))
     elif curr in UNARY:
         stack.append(Expression(curr, stack.pop()))
-    else:
-        stack.append(curr)
+    elif curr != "(":
+        stack.append(Expression(NOOP, curr))
 
 #for variables
 alpha = 'abcdefghijklmnopqrstuvwxyz'
@@ -46,7 +46,7 @@ oper_literals = {oper:Literal(oper) for oper in OPERATORS}
 oper_patterns = {oper:Forward() for oper in OPERATORS}
 
 expr = Forward()
-atom = operand | lpar + expr + rpar
+atom = operand | lpar + expr + rpar.setParseAction()
 
 prev_pattern = atom
 
@@ -54,6 +54,7 @@ atom.setParseAction(toExpression)
 
 for opers in PRECEDENCE:
     pattern_list = []
+    #only accepts unary and binary operation as there are not ternary in boolean
     for op in opers:
         if op in UNARY:
             alternative = OneOrMore(oper_literals[op]) + prev_pattern
@@ -68,7 +69,7 @@ for opers in PRECEDENCE:
         else:
             raise Exception(op)
 
-    if len(pattern_list) == 1: #Do not create another object
+    if len(pattern_list) == 1: 
         prev_pattern = pattern_list[0]
     else:
         prev_pattern = Or(pattern_list)

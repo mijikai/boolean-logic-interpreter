@@ -8,11 +8,13 @@ OR = '|'
 XOR = '^'
 IF = '=>'
 IFF = '<=>'
+NOOP = ' '
 CONSTANTS = (TRUE, FALSE)
-UNARY = (NOT)
+UNARY = (NOT, NOOP)
 BINARY = (AND, OR, XOR, IF, IFF)
 OPERATORS = tuple(list(UNARY) + list(BINARY))
 PRECEDENCE = (
+        (NOOP,),
         (NOT,),
         (AND,),
         (OR,),
@@ -138,7 +140,13 @@ def iff(x, y):
     res_and = and_(x, y)
     return res_and if res_and == TRUE else not_(or_(x, y))
 
+@args_constant_check
+@return_constant_check
+def noop(x):
+    return x
+
 bool_funcs_dict = {
+        NOOP: noop,
         NOT: not_,
         AND: and_,
         OR: or_,

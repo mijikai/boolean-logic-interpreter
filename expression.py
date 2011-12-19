@@ -143,7 +143,10 @@ def evaluate(expr, funcs, mapping={}):
         if curr_frame in memo:
             continue
 
-        args = [curr_frame.arg1, curr_frame.arg2]
+        args = [curr_frame.arg1]
+
+        if curr_frame.arg2 != None:
+            args.append(curr_frame.arg2)
 
         for ind, arg in zip(range(len(args)), args):
             if arg in memo:

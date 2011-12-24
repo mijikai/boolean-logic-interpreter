@@ -88,9 +88,7 @@ class TruthTable:
 if __name__ == '__main__':
     while True:
         try:
-            string = '(p|~p)&' * 1000 + 'T'
-#            string = input('>>> ')
-
+            string = input('>>> ')
         except EOFError:
             break
 
@@ -98,5 +96,4 @@ if __name__ == '__main__':
         for row in table.generate():
             for column in row:
                 print(*column)
-        break
 

@@ -46,7 +46,7 @@ oper_literals = {oper:Literal(oper) for oper in OPERATORS}
 oper_patterns = {oper:Forward() for oper in OPERATORS}
 
 expr = Forward()
-atom = operand | lpar + expr + rpar.setParseAction()
+atom = operand | lpar + expr + rpar
 
 prev_pattern = atom
 

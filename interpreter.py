@@ -91,6 +91,8 @@ if __name__ == '__main__':
             string = input('>>> ')
         except EOFError:
             break
+        else:
+            string = string.strip()
 
         table = TruthTable(string)
         for row in table.generate():

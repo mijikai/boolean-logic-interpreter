@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from pyparsing import Word, Literal, Forward, OneOrMore, ZeroOrMore,\
-    Or, MatchFirst, Group, StringEnd
+from pyparsing import Word, Literal, Forward, OneOrMore, ZeroOrMore
+from pyparsing import Or, MatchFirst, Group, StringEnd
 from boolean import NOOP, UNARY, BINARY, OPERATORS, PRECEDENCE, CONSTANTS
 from expression import Expression
 

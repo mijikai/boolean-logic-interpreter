@@ -7,10 +7,10 @@ from expression import Expression
 
 __all__ = ['parse']
 
-#This function will be called by the pattern when an expression is
-#parsed. We only need the first element of tok and push them in the
-#stack. If the function will just only append the first element of tok
-#to the stack, the stack will appear to be in infix order.
+# This function will be called by the pattern when an expression is
+# parsed. We only need the first element of tok and push them in the
+# stack. If the function will just only append the first element of tok
+# to the stack, the stack will appear to be in infix order.
 stack = []
 
 
@@ -27,7 +27,7 @@ def toExpression(s, loc, tok):
     elif curr != "(":
         stack.append(Expression(NOOP, curr))
 
-#for variables
+# for variables
 alpha = 'abcdefghijklmnopqrstuvwxyz'
 alpha += alpha.upper()
 
@@ -36,7 +36,7 @@ for i in CONSTANTS:
     alpha_list.remove(i)
 alpha = ''.join(alpha_list)
 
-#nesting
+# nesting
 lpar = Literal('(')
 rpar = Literal(')')
 

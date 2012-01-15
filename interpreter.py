@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 
 from bool_parser import parse
 from boolean import bool_funcs_dict, CONSTANTS
@@ -22,8 +22,8 @@ class TruthTable:
         self._make_combination()
 
     def _find_variables(self):
-        #Find all the identifier in the expression. Used in order to determine
-        #the possible combination of truth table and assign those some value
+        # Find all the identifier in the expression. Used in order to determine
+        # the possible combination of truth table and assign those some value
 
         vars = set()
         stack = []
@@ -50,14 +50,14 @@ class TruthTable:
         self.vars = tuple(vars)
 
     def _make_combination(self):
-    #Make all possible combinations of true and false using the given set of
-    #variables.
+    # Make all possible combinations of true and false using the given set of
+    # variables.
 
         var_combination = []
         no_of_combination = len(self.vars)
         cartesian_product = product(CONSTANTS, repeat=no_of_combination)
 
-        #Map all those values to their respective variable
+        # Map all those values to their respective variable
         for values in cartesian_product:
             mapping = {}
             for variable, value in zip(self.vars, values):

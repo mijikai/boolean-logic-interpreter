@@ -20,13 +20,15 @@ PRECEDENCE = (
         (OR,),
         (XOR,),
         (IF,),
-        (IFF,)) 
+        (IFF,))
+
 
 def args_constant_check(func):
     def checker(*args, **kwargs):
         for arg in args:
             if arg not in CONSTANTS:
-                raise ValueError('invalid argument given for ' + checker.__name__ + ': ' + str(arg))
+                raise ValueError('invalid argument given for ' +
+                        checker.__name__ + ': ' + str(arg))
         return func(*args, **kwargs)
 
     checker.__name__ = func.__name__
@@ -34,17 +36,20 @@ def args_constant_check(func):
 
     return checker
 
+
 def return_constant_check(func):
     def checker(*args, **kwargs):
         return_value = func(*args, **kwargs)
         if return_value not in CONSTANTS:
-            raise Exception('invalid return value for ' + checker.__name__ + ': ' + str(return_value))
+            raise Exception('invalid return value for ' +
+                    checker.__name__ + ': ' + str(return_value))
         return return_value
 
     checker.__name__ = func.__name__
     checker.__doc__ = func.__doc__
 
     return checker
+
 
 @args_constant_check
 @return_constant_check
@@ -57,6 +62,7 @@ def not_(x):
     'T'
     """
     return TRUE if x == FALSE else FALSE
+
 
 @args_constant_check
 @return_constant_check
@@ -74,6 +80,7 @@ def and_(x, y):
     """
     return x if x == FALSE else y
 
+
 @args_constant_check
 @return_constant_check
 def or_(x, y):
@@ -89,6 +96,7 @@ def or_(x, y):
     'F'
     """
     return x if x == TRUE else y
+
 
 @args_constant_check
 @return_constant_check
@@ -106,6 +114,7 @@ def xor(x, y):
     """
     return not_(iff(x, y))
 
+
 @args_constant_check
 @return_constant_check
 def if_(x, y):
@@ -121,6 +130,7 @@ def if_(x, y):
     'T'
     """
     return TRUE if x != TRUE or y != FALSE else FALSE
+
 
 @args_constant_check
 @return_constant_check
@@ -140,6 +150,7 @@ def iff(x, y):
     res_and = and_(x, y)
     return res_and if res_and == TRUE else not_(or_(x, y))
 
+
 @args_constant_check
 @return_constant_check
 def noop(x):
@@ -158,7 +169,8 @@ bool_funcs_dict = {
 
 if __name__ == '__main__':
     if TRUE == FALSE:
-        raise Exception('TRUE value equals FALSE: ' + repr(TRUE) + ' == ' + repr(FALSE))
+        raise Exception('TRUE value equals FALSE: ' + repr(TRUE) +
+                ' == ' + repr(FALSE))
 
     import doctest
     doctest.testmod()

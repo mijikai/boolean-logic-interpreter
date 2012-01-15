@@ -42,7 +42,8 @@ class TruthTable:
                 elif type(i) == str:
                     vars.add(i)
                 else:
-                    raise Exception("'" + type(i).__name__ + "' is not a str or Expression")
+                    raise Exception("'" + type(i).__name__ +
+                            "' is not a str or Expression")
 
         vars = list(vars)
         vars.sort()
@@ -51,7 +52,7 @@ class TruthTable:
     def _make_combination(self):
     #Make all possible combinations of true and false using the given set of
     #variables.
-        
+
         var_combination = []
         no_of_combination = len(self.vars)
         cartesian_product = product(CONSTANTS, repeat=no_of_combination)
@@ -60,7 +61,7 @@ class TruthTable:
         for values in cartesian_product:
             mapping = {}
             for variable, value in zip(self.vars, values):
-                mapping[variable] = value 
+                mapping[variable] = value
             var_combination.append(mapping)
         self.var_combination = tuple(var_combination)
 
@@ -70,8 +71,6 @@ class TruthTable:
 
         evaln is a tuple of two elements composed of the variable and
         expression."""
-
-
         truth_table = []
 
         if len(self.var_combination):
@@ -85,6 +84,7 @@ class TruthTable:
 
         return tuple(truth_table)
 
+
 if __name__ == '__main__':
     while True:
         try:
@@ -94,8 +94,10 @@ if __name__ == '__main__':
         else:
             string = string.strip()
 
+        if not string:
+            continue
+
         table = TruthTable(string)
         for row in table.generate():
             for column in row:
                 print(*column)
-

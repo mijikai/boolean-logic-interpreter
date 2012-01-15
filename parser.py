@@ -3,9 +3,10 @@
 import itertools
 import inspect
 
+
 class Tokenizer(object):
     """Creates an iterable object that returns a token."""
-    
+
     def __init__(self, iterable, operators=frozenset({})):
         if type(operators) != frozenset:
             raise TypeError('operators must be of type frozenset')
@@ -47,12 +48,14 @@ class Tokenizer(object):
     def __opertok(self, ind):
         """Returns the longest match from the operator set or False if
         no match is found."""
-        
+
         operators = list(self.operators)
         tok = []
 
-        #Loop over the string from ind and match the operators list in parallel.
-        for char, oper_ind in zip(itertools.islice(self.iterable, ind, None), itertools.count()):
+        # Loop over the string from ind and
+        # match the operators list in parallel.
+        for char, oper_ind in zip(itertools.islice(self.iterable, ind, None),
+                itertools.count()):
             if not operators or char in self.WHITESPACE:
                 break
 
@@ -65,7 +68,8 @@ class Tokenizer(object):
                 else:
                     operators.remove(oper)
 
-        if not tok: return False
+        if not tok:
+            return False
         return ''.join(tok)
 
     def __ordinarytok(self, ind):
@@ -74,12 +78,14 @@ class Tokenizer(object):
         False if the string is composed of whitespaces."""
 
         tok = []
-        for char, tok_ind in zip(itertools.islice(self.iterable, ind, None), itertools.count(ind)):
+        for char, tok_ind in zip(itertools.islice(self.iterable, ind, None),
+                itertools.count(ind)):
             if char in self.WHITESPACE or self.__opertok(tok_ind):
                 return ''.join(tok)
             tok.append(char)
 
-        if not tok: return False
+        if not tok:
+            return False
         return ''.join(tok)
 
     def peek(self):
@@ -90,39 +96,39 @@ class Tokenizer(object):
 
 
 class Evaluator(object):
-   def __init__(self, postExpr, funcs, vars={}):
-       self.postExpr = list(postExpr)
-       self.funcs = dict(funcs)
-       self.vars = dict(vars)
+    def __init__(self, postExpr, funcs, vars={}):
+        self.postExpr = list(postExpr)
+        self.funcs = dict(funcs)
+        self.vars = dict(vars)
 
-   def __iter__(self):
-       stk_opern = []
-       stk_oper = []
+    def __iter__(self):
+        stk_opern = []
+        stk_oper = []
 
-       for i in self.postExpr[:]:
-           if i in self.funcs:
-               func = self.funcs[i]
-               arg = []
-               arglen = len(inspect.getfullargspec(func)[0])
+        for i in self.postExpr[:]:
+            if i in self.funcs:
+                func = self.funcs[i]
+                arg = []
+                arglen = len(inspect.getfullargspec(func)[0])
 
-               for j in range(arglen):
-                   arg.append(stk_opern.pop())
+                for j in range(arglen):
+                    arg.append(stk_opern.pop())
 
-               arg.reverse()
-               value = func(*arg)
-               stk_opern.append(value)
+                arg.reverse()
+                value = func(*arg)
+                stk_opern.append(value)
 
-               yield value
-           elif i in self.vars:
-               value = self.vars[i]
-               stk_opern.append(value)
-               yield value
-           else:
-               stk_opern.append(i)
+                yield value
+            elif i in self.vars:
+                value = self.vars[i]
+                stk_opern.append(value)
+                yield value
+            else:
+                stk_opern.append(i)
 
-       if len(stk_opern) != 1:
-           raise Exception
-       raise StopIteration
+        if len(stk_opern) != 1:
+            raise Exception
+        raise StopIteration
 
 
 def parse(iterable, operation, preced):
@@ -133,10 +139,10 @@ def parse(iterable, operation, preced):
     operation -> a dictionary type composed of keys unary, binary, and
         parenthesis. The unary and binary keys has a value of tuple
         composed of strings and the parenthesis key has a value of dictionary
-        whose key is the open parenthesis and value is a close parenthesis.  
+        whose key is the open parenthesis and value is a close parenthesis.
     preced -> a dictionary type whose keys are the valid operations and value
         corresponding to their precedence."""
-    
+
     stk_oper = []
     stk_post = []
     stk_tok = []
@@ -167,7 +173,8 @@ def parse(iterable, operation, preced):
                 raise SyntaxError
             elem = stk_post.pop()
 
-            while stk_post and elem in operators and preced[tok] < preced[elem]:
+            while (stk_post and elem in operators and
+                    preced[tok] < preced[elem]):
                 stk_oper.append(elem)
                 elem = stk_post.pop()
 
@@ -203,5 +210,3 @@ def parse(iterable, operation, preced):
     if stk_oper:
         raise SyntaxError
     return stk_post
-
-

@@ -2,7 +2,11 @@
 
 import collections as _collections
 
-class Expression(_collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])):
+__all__ = ['Expression', 'evaluate', 'evaluate2']
+
+
+class Expression(_collections.namedtuple('Expression',
+    ['oper', 'arg1', 'arg2'])):
     """Returns a tuple (oper, arg1, arg2)
 
     oper, arg1 and arg2 can be of any immutable type. oper and arg1 must not
@@ -17,7 +21,7 @@ class Expression(_collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])
             string += ' ' + str(self.arg2)
         string += ')'
         return string
-        
+
     def getsubexpr(self):
         r"""Returns a tuple composed of Expression objects. If the object has a
         depth h, the first elements of the tuple are the nodes of the root at
@@ -90,7 +94,7 @@ class Expression(_collections.namedtuple('Expression', ['oper', 'arg1', 'arg2'])
         >>> c.replace_expr(a, 3) == Expression('-', 3, b)
         True
         """
-        
+
         subexpr_tuple = self.getsubexpr()
         stored_value = {}
         has_matched = False
@@ -158,6 +162,7 @@ def evaluate(expr, funcs, mapping={}):
         results.append((curr_frame, memo[curr_frame]))
 
     return results
+
 
 def evaluate2(expr, funcs, mapping={}):
     """Returns a list of expressions. The list begins with the original

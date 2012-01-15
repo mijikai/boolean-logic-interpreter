@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pyparsing import Word, Literal, Forward, OneOrMore, ZeroOrMore
-from pyparsing import Or, MatchFirst, Group, StringEnd
+from pyparsing import Or, MatchFirst, Group, StringEnd, Empty
 from boolean import NOOP, UNARY, BINARY, OPERATORS, PRECEDENCE, CONSTANTS
 from expression import Expression
 
@@ -12,6 +12,8 @@ __all__ = ['parse']
 #stack. If the function will just only append the first element of tok
 #to the stack, the stack will appear to be in infix order.
 stack = []
+
+
 def toExpression(s, loc, tok):
     curr = tok[0]
     if curr in BINARY:
@@ -42,23 +44,24 @@ var = Word(alpha)
 constant = MatchFirst([Literal(i) for i in CONSTANTS])
 operand = constant | var
 
-oper_literals = {oper:Literal(oper) for oper in OPERATORS}
-oper_patterns = {oper:Forward() for oper in OPERATORS}
+oper_literals = {oper: Literal(oper) for oper in OPERATORS}
+oper_patterns = {oper: Forward() for oper in OPERATORS}
 
 expr = Forward()
 atom = operand | lpar + expr + rpar
 
 prev_pattern = atom
 
-atom.setParseAction(toExpression) 
+atom.setParseAction(toExpression)
 
 for opers in PRECEDENCE:
     pattern_list = []
-    #only accepts unary and binary operation as there are not ternary in boolean
+    #only accepts unary and binary operation
+    #as there are not ternary in boolean
     for op in opers:
         if op in UNARY:
             alternative = OneOrMore(oper_literals[op]) + prev_pattern
-            alternative.setParseAction(toExpression) 
+            alternative.setParseAction(toExpression)
             unary_pattern = prev_pattern | alternative
             pattern_list.append(unary_pattern)
         elif op in BINARY:
@@ -69,17 +72,23 @@ for opers in PRECEDENCE:
         else:
             raise Exception(op)
 
-    if len(pattern_list) == 1: 
+    if len(pattern_list) == 1:
         prev_pattern = pattern_list[0]
     else:
         prev_pattern = Or(pattern_list)
 
 expr << prev_pattern
-pattern = expr + StringEnd()
+pattern = (expr | Empty()) + StringEnd()
+
 
 def parse(string):
-    """Parses the string into an Expression object."""
+    """Parses the string into an Expression object.
+    If string is composed of only whitespaces or is empty, returns None.
+    """
     global stack
     stack = []
-    pattern.parseString(string) 
-    return stack.pop() #after parsing the stack should have only one item
+    pattern.parseString(string)
+    try:
+        return stack.pop()  # after parsing the stack should have only one item
+    except IndexError:
+        return None

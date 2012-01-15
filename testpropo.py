@@ -2,9 +2,9 @@
 
 import parser
 
+
 def testTokenizer():
     tokenizer = parser.Tokenizer("")
-    class Dummy(Exception): pass
 
     def test(string, opers, values, exception=Dummy):
         tokenizer.iterable = string
@@ -24,11 +24,11 @@ def testTokenizer():
             passed = False
 
         if passed:
-            print('Passed: string =', repr(string), ', opers =',  repr(opers), 
+            print('Passed: string =', repr(string), ', opers =',  repr(opers),
                   ', values = ', repr(values))
         else:
-            print('Failed:', 'string =', repr(string), ', opers =', repr(opers), ',',
-                   repr(token), '!=', repr(value))
+            print('Failed:', 'string =', repr(string), ', opers =',
+                    repr(opers), ',', repr(token), '!=', repr(value))
 
     test('', frozenset([]), [])
     test('2', frozenset([]), ['2'])

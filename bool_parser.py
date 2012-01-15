@@ -89,6 +89,10 @@ def parse(string):
     stack = []
     pattern.parseString(string)
     try:
-        return stack.pop()  # after parsing the stack should have only one item
+        # after parsing the stack should have only one item
+        res = stack.pop() 
+        if stack:
+            return
+        return res
     except IndexError:
-        return None
+        return

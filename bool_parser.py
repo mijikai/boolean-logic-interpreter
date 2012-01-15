@@ -56,8 +56,8 @@ atom.setParseAction(toExpression)
 
 for opers in PRECEDENCE:
     pattern_list = []
-    #only accepts unary and binary operation
-    #as there are not ternary in boolean
+    # only accepts unary and binary operation
+    # as there are no ternary in boolean
     for op in opers:
         if op in UNARY:
             alternative = OneOrMore(oper_literals[op]) + prev_pattern

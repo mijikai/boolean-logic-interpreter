@@ -137,7 +137,7 @@ def evaluate(expr, funcs, mapping={}):
         values are functions
     mapping -> a dictionary whose keys are possible objects contained in
     expr.arg1 or expr.arg2, and values which will be substitute when a key
-        correspond to either expr.arg1 or expr.arg2."""
+        corresponds to either expr.arg1 or expr.arg2."""
 
     expr_list = expr.getsubexpr()
     memo = {}
@@ -165,10 +165,8 @@ def evaluate(expr, funcs, mapping={}):
 
 
 def evaluate2(expr, funcs, mapping={}):
-    """Returns a list of expressions. The list begins with the original
-    expression pass and ends with the answer to the evaluation. The
-    expressions between the first and the last are sequences which leads
-    the first to the last.
+    """Returns a list of Expression objects. The list is a sequence that shows
+    the evaluation of the Expression into a simple form.
 
     Example:
     >>> funcs = {'+': lambda x, y: x + y,
@@ -198,6 +196,7 @@ def evaluate2(expr, funcs, mapping={}):
         results.append(expr)
 
     for curr_frame in expr.getsubexpr():
+        # Don't recalculate the result
         if curr_frame in memo:
             expr = expr.replace_expr(curr_frame, memo[curr_frame])
             results.append(expr)
@@ -206,6 +205,7 @@ def evaluate2(expr, funcs, mapping={}):
         args = [curr_frame.arg1, curr_frame.arg2]
 
         args_equiv = []
+        # If the argument has a result in the memo, the result replaces that argument.
         for arg in args[:]:
             if arg in memo:
                 args_equiv.append(memo[arg])

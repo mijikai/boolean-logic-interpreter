@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 
 from bool_parser import parse
 from boolean import bool_funcs_dict, CONSTANTS

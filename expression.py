@@ -20,7 +20,7 @@ class Expression(_collections.namedtuple('Expression',
         of whitespace only, return the str of arg1.
 
         Examples:
-        >>> print(Expression(' ', 3)) 
+        >>> print(Expression(' ', 3))
         3
         >>> print(Expression('-', 3))
         (- 3)
@@ -34,7 +34,7 @@ class Expression(_collections.namedtuple('Expression',
         if self.oper.strip() == '':
             template = '{}'
             values = [self.arg1]
-        elif self.arg2 == None: 
+        elif self.arg2 == None:
             template = '({} {})'
             values.pop()
         else:
@@ -224,7 +224,8 @@ def evaluate2(expr, funcs, mapping={}):
         args = [curr_frame.arg1, curr_frame.arg2]
 
         args_equiv = []
-        # If the argument has a result in the memo, the result replaces that argument.
+        # If the argument has a result in the memo,
+        # the result replaces that argument.
         for arg in args[:]:
             if arg in memo:
                 args_equiv.append(memo[arg])

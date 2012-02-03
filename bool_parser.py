@@ -90,7 +90,7 @@ def parse(string):
     pattern.parseString(string)
     try:
         # after parsing the stack should have only one item
-        res = stack.pop() 
+        res = stack.pop()
         if stack:
             return
         return res

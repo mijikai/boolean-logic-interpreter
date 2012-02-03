@@ -27,8 +27,8 @@ def args_constant_check(func):
     def checker(*args, **kwargs):
         for arg in args:
             if arg not in CONSTANTS:
-                raise ValueError('invalid argument given for ' +
-                        checker.__name__ + ': ' + str(arg))
+                raise ValueError('invalid argument given for {}: {}'.format(
+                        checker.__name__, str(arg)))
         return func(*args, **kwargs)
 
     checker.__name__ = func.__name__
@@ -41,8 +41,8 @@ def return_constant_check(func):
     def checker(*args, **kwargs):
         return_value = func(*args, **kwargs)
         if return_value not in CONSTANTS:
-            raise Exception('invalid return value for ' +
-                    checker.__name__ + ': ' + str(return_value))
+            raise ValueError('invalid return value of {}: {}'.format(
+                    checker.__name__, str(return_value)))
         return return_value
 
     checker.__name__ = func.__name__
@@ -169,8 +169,8 @@ bool_funcs_dict = {
 
 if __name__ == '__main__':
     if TRUE == FALSE:
-        raise Exception('TRUE value equals FALSE: ' + repr(TRUE) +
-                ' == ' + repr(FALSE))
+        raise Exception('TRUE value equals FALSE: {} == {}'.format(
+            repr(TRUE), repr(FALSE)))
 
     import doctest
     doctest.testmod()

@@ -16,11 +16,30 @@ class Expression(_collections.namedtuple('Expression',
         return super().__new__(cls, oper, arg1, arg2)
 
     def __str__(self):
-        string = '(' + str(self.oper) + ' ' + str(self.arg1)
-        if self.arg2 != None:
-            string += ' ' + str(self.arg2)
-        string += ')'
-        return string
+        r"""Returns an s expr representation of the object. If oper is composed
+        of whitespace only, return the str of arg1.
+
+        Examples:
+        >>> print(Expression(' ', 3)) 
+        3
+        >>> print(Expression('-', 3))
+        (- 3)
+        >>> print(Expression('*', 8, 4))
+        (* 8 4)
+        >>> print(Expression('+', Expression('-', 6), 3))
+        (+ (- 6) 3)
+        """
+
+        values = [self.oper, self.arg1, self.arg2]
+        if self.oper.strip() == '':
+            template = '{}'
+            values = [self.arg1]
+        elif self.arg2 == None: 
+            template = '({} {})'
+            values.pop()
+        else:
+            template = '({} {} {})'
+        return template.format(*values)
 
     def getsubexpr(self):
         r"""Returns a tuple composed of Expression objects. If the object has a

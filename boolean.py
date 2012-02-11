@@ -147,8 +147,7 @@ def iff(x, y):
     >>> iff(FALSE, FALSE)
     'T'
     """
-    res_and = and_(x, y)
-    return res_and if res_and == TRUE else not_(or_(x, y))
+    return TRUE if x == y else FALSE
 
 
 @args_constant_check

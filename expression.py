@@ -245,6 +245,15 @@ def evaluate2(expr, funcs, mapping={}):
 
     return results
 
+
+def infixRepr(expr):
+    """'Convert the expr into a string in infix form."""
+    if expr.oper == ' ':
+        return str(expr.arg1)
+    if expr.arg2 == None:
+        return '{}{}'.format(expr.oper, infixRepr(expr.arg1))
+    return '({} {} {})'.format(infixRepr(expr.arg1), expr.oper, infixRepr(expr.arg2))
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

@@ -89,6 +89,36 @@ class TruthTable:
 
         return truth_table
 
+    def display_table(self):
+        """Display table in the console"""
+        truth_table = self.generate()
+        head = truth_table[0]
+        truth_table[0:1] = []
+        length_row = sum(map(len, head)) + len(head) + 1
+        for i, j in enumerate(head[:]):
+            head[i] = infixRepr(j)
+        for j in head:
+            print('+', end='')
+            print('-' * len(j), end='')
+        print('+')
+        for j in head:
+            print('|', end='')
+            print(j, end='')
+        print('|')
+        for j in head:
+            print('+', end='')
+            print('-' * len(j), end='')
+        print('+')
+        for row in truth_table:
+            for head_col, col in zip(head, row):
+                print('|', end='')
+                print(col.rjust(len(head_col)), end='')
+            print('|')
+        for j in head:
+            print('+', end='')
+            print('-' * len(j), end='')
+        print('+')
+
 
 if __name__ == '__main__':
     while True:

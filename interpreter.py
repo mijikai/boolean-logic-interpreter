@@ -3,7 +3,8 @@
 from bool_parser import parse
 from boolean import bool_funcs_dict, CONSTANTS
 from itertools import product
-from expression import evaluate, evaluate2, Expression
+from expression import evaluate, evaluate2, Expression, infixRepr
+from pyparsing import ParseException
 
 
 class TruthTable:
@@ -66,23 +67,27 @@ class TruthTable:
         self.var_combination = tuple(var_combination)
 
     def generate(self):
-        """Generates the truth table. Returns a tuple of this format:
-        (eval1, eval2, ...).
-
-        evaln is a tuple of two elements composed of the variable and
-        expression."""
+        """Generates the truth table. Returns a list whose first element is a
+        the formula and the rest are their corresponding values.
+        """
         truth_table = []
 
         if len(self.var_combination):
+            head = []
+            truth_table.append(head)
             for mapping in self.var_combination:
                 row = []
-                row.extend(evaluate(self._expr, bool_funcs_dict, mapping))
+                for formula, value in evaluate(self._expr, bool_funcs_dict, mapping):
+                    if formula not in head:
+                        head.append(formula)
+                    row.append(value)
                 truth_table.append(row)
         else:
-            row = evaluate(self._expr, bool_funcs_dict)
-            truth_table.append(row)
+            for formula, value in evaluate(self._expr, bool_funcs_dict):
+                row.append(value)
+                truth_table.append(row)
 
-        return tuple(truth_table)
+        return truth_table
 
 
 if __name__ == '__main__':

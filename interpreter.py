@@ -123,7 +123,7 @@ class TruthTable:
 if __name__ == '__main__':
     while True:
         try:
-            string = input('>>> ')
+            string = input('boolean> ')
         except EOFError:
             break
         else:
@@ -132,7 +132,9 @@ if __name__ == '__main__':
         if not string:
             continue
 
-        table = TruthTable(string)
-        for row in table.generate():
-            for column in row:
-                print(*column)
+        try:
+            table = TruthTable(string)
+        except ParseException as ex:
+            print(ex)
+        else:
+            table.display_table()

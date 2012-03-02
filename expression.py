@@ -46,12 +46,7 @@ class Expression(_collections.namedtuple('Expression',
 
         Examples:
 
-    def replace_expr(self, expr, value, replaceall=False):
-        """Replaces one of the subexpression with value.
 
-        If replaceall is set to True, it will replace all instances of
-        subexpression expr with value.
-        If expr is not found, returns self.
 
         Example:
         >>> a = Expression('+', 'a', 'b')
@@ -60,40 +55,6 @@ class Expression(_collections.namedtuple('Expression',
         >>> c.replace_expr(a, 3) == Expression('-', 3, b)
         True
         """
-
-        subexpr_tuple = self.getsubexpr()
-        stored_value = {}
-        has_matched = False
-
-        for curr in subexpr_tuple:
-            if curr == expr:
-                stored_value[curr] = value
-                continue
-
-            args = [curr.oper]
-            found = False
-
-            for arg in (curr.arg1, curr.arg2):
-                if arg == expr:
-                    if not has_matched or replaceall:
-                        found = True
-                        args.append(value)
-                    has_matched = True
-                elif arg in stored_value:
-                    found = True
-                    args.append(stored_value[arg])
-                    if not replaceall:
-                        del stored_value[arg]
-                else:
-                    args.append(arg)
-
-            if found:
-                stored_value[curr] = Expression(*args)
-
-        if self in stored_value:
-            return stored_value[self]
-        return self
-
 
 def evaluate(expr, funcs, mapping={}):
     """Returns a list of tuples composed of Expression object and result.

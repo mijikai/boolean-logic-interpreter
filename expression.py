@@ -39,6 +39,9 @@ class Expression(_collections.namedtuple('Expression',
             values.pop()
         else:
             template = '({} {} {})'
+        for i, j in enumerate(values[:]):
+            if isinstance(j, self.__class__):
+                values[i] = j.sexpr() 
         return template.format(*values)
 
     def getsubexpr(self):

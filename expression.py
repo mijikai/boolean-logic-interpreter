@@ -2,7 +2,7 @@
 
 import collections as _collections
 
-__all__ = ['Expression', 'evaluate', 'evaluate2']
+__all__ = ['Expression', 'evaluation_order_simulate']
 
 
 class Expression(_collections.namedtuple('Expression',
@@ -116,6 +116,7 @@ class Expression(_collections.namedtuple('Expression',
         """Determine whether this object has no children whose type is
         Expression."""
         return self.oper.strip() == ''
+
 
 def simulate(order, mappings={}, funcs={}):
     """Make some simplification and substitution to the list of expression.

@@ -112,6 +112,11 @@ class Expression(_collections.namedtuple('Expression',
 
         return order
 
+    def is_leaf(self):
+        """Determine whether this object has no children whose type is
+        Expression."""
+        return self.oper.strip() == ''
+
 def simulate(order, mappings={}, funcs={}):
     """Make some simplification and substitution to the list of expression.
     oper, arg1 and arg2 refers to the attribute of the Expression object.

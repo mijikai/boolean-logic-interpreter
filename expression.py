@@ -54,113 +54,135 @@ class Expression(_collections.namedtuple('Expression',
         >>> c = Expression('-', a, b)
         >>> c.replace_expr(a, 3) == Expression('-', 3, b)
         True
+    def evaluation_order(self):
+        """Returns a list of the evaluation order of the Expression object.
+        When oper is a space, the list will be composed of the value of arg1
+        otherwise, the list will be composed of the evaluation order of arg1,
+        evaluation order of arg2 and the object itself in order.
+        
+        Examples:
+        >>> Expression(' ', 'a').evaluation_order()
+        [Expression(oper=' ', arg1='a', arg2=None)]
+        >>> a = Expression('+', 3, 2)
+
+        >>> a.evaluation_order()
+        [3, 2, Expression(oper='+', arg1=3, arg2=2)]
+        >>> b = Expression('*', 4, 5)
+
+        >>> b.evaluation_order()
+        [4, 5, Expression(oper='*', arg1=4, arg2=5)]
+        >>> c = Expression('/', a, 'a')
+
+        >>> c.evaluation_order()
+        [3, 2, Expression(oper='+', arg1=3, arg2=2), 'a', Expression(oper='/', arg1=Expression(oper='+', arg1=3, arg2=2), arg2='a')]
         """
 
-def evaluate(expr, funcs, mapping={}):
-    """Returns a list of tuples composed of Expression object and result.
+        args = [self.arg1, self.arg2]
 
-    expr -> Expression object
-    funcs -> a dictionary whose keys are possible objects in expr.oper and
-        values are functions
-    mapping -> a dictionary whose keys are possible objects contained in
-    expr.arg1 or expr.arg2, and values which will be substitute when a key
-        corresponds to either expr.arg1 or expr.arg2."""
+        if self.arg2 == None or self.is_leaf():
+            args.pop()
 
-    expr_list = expr.getsubexpr()
-    memo = {}
-    results = []
+        order = []
+        for i, arg in enumerate(args):
+            if isinstance(arg, self.__class__):
+                order.extend(arg.evaluation_order())
+            elif not self.is_leaf():
+                order.append(arg)
+        order.append(self)
 
-    for curr_frame in expr_list:
-        if curr_frame in memo:
-            continue
+        return order
 
-        args = [curr_frame.arg1]
+def simulate(order, mappings={}, funcs={}):
+    """Make some simplification and substitution to the list of expression.
+    oper, arg1 and arg2 refers to the attribute of the Expression object.
 
-        if curr_frame.arg2 != None:
-            args.append(curr_frame.arg2)
+    order - if an Expression object, get first the evaluation order. The
+        order controls the simplification and substitution.
+    mappings - a dictionary in which an element from order or arg1 or arg2 of
+        the object will be replaced by the value of the key equal to that
+        element. 
+    funcs - a dictionary in which the oper will be match against the key of the
+        dictionary. The value must be a callable object. 
 
-        for ind, arg in zip(range(len(args)), args):
-            if arg in memo:
-                args[ind] = memo[arg]
-            elif arg in mapping:
-                args[ind] = mapping[arg]
+    If an element in ``order`` is not an ``Expression``, the value
+    corresponding to the element will substitute that element. If an element is
+    an ``Expression`` but its ``oper`` is a space. match the ``arg1`` in the
+    keys of ``mappings`` and substitute the element with the matching value.
+    After those substitution, find the corresponding ``oper`` in ``funcs`` and
+    use that value to simplify the expression.
 
-        memo[curr_frame] = funcs[curr_frame.oper](*args)
-        results.append((curr_frame, memo[curr_frame]))
+    No error is thrown if ``oper``, ``arg1`` or ``arg2`` does not match
+    ``mappings`` or ``funcs``
 
-    return results
-
-
-def evaluate2(expr, funcs, mapping={}):
-    """Returns a list of Expression objects. The list is a sequence that shows
-    the evaluation of the Expression into a simple form.
-
-    Example:
-    >>> funcs = {'+': lambda x, y: x + y,
-    ...     '-': lambda x, y: x - y,
-    ...     '*': lambda x, y: x * y}
-    >>> a = Expression('+', 3, 2)
-    >>> b = Expression('-', 7, 4)
-    >>> c = Expression('*', a, b)
-    >>> for i in evaluate2(c, funcs): print(i)
-    (* (+ 3 2) (- 7 4))
-    (* 5 (- 7 4))
-    (* 5 3)
-    15
+    Returns a list equal to the length of ``order`` composed of evaluated
+    values correspond to the aformentioned list.
+        
+    Examples:
+        >>> mappings = {'a': 3, 'b': 8, 'c': 4}
+        >>> funcs = {'+': lambda x, y: x + y, '*': lambda x, y: x * y}
+        >>> a = Expression(' ', 'a') # a
+        >>> simulate(a, mappings, funcs)
+        [3]
+        >>> b = Expression('+', 5, a) # 5 + a
+        >>> simulate(b, mappings, funcs)
+        [5, 3, 8]
+        >>> c = Expression('*', a, 'c') # a * c
+        >>> simulate(c, mappings, funcs)
+        [3, 4, 12]
+        >>> d = Expression('+', b, c) # (5 + a) + (a * c)
+        >>> simulate(d, mappings, funcs)
+        [5, 3, 8, 3, 4, 12, 20]
+        >>> e = Expression('*', 'b', d) # b * ((5 + a) + (a * c))
+        >>> simulate(e, mappings, funcs)
+        [8, 5, 3, 8, 3, 4, 12, 20, 160]
     """
 
-    memo = {}
-    results = []
-    type_expr = type(expr)
-    orig_expr = expr
+    if isinstance(order, Expression):
+        order = order.evaluation_order()
 
-    results.append(expr)
+    new_order = []
+    subs_expr = {}
+    for stmt in order:
+        var = stmt
+        if isinstance(stmt, Expression):
+            if stmt.oper == ' ':
+                var = stmt.arg1
+            else:
+                del var
 
-    for var in mapping:
-        expr = expr.replace_expr(var, mapping[var], True)
-
-    if orig_expr != expr:
-        results.append(expr)
-
-    for curr_frame in expr.getsubexpr():
-        # Don't recalculate the result
-        if curr_frame in memo:
-            expr = expr.replace_expr(curr_frame, memo[curr_frame])
-            results.append(expr)
+        if 'var' in dir():
+            try:
+                sub = mappings[var]
+            except KeyError:
+                sub = var
+            subs_expr[stmt] = sub
+            new_order.append(sub)
             continue
 
-        args = [curr_frame.arg1, curr_frame.arg2]
+        if stmt in subs_expr:
+            new_order.append(subs_expr[stmt])
+            continue
 
-        args_equiv = []
-        # If the argument has a result in the memo,
-        # the result replaces that argument.
-        for arg in args[:]:
-            if arg in memo:
-                args_equiv.append(memo[arg])
-            else:
-                args_equiv.append(arg)
+        args = [stmt.arg1, stmt.arg2]
+        if stmt.oper == ' ' or stmt.arg2 == None:
+            args.pop()
 
-        answer = funcs[curr_frame.oper](*args_equiv)
-        memo[curr_frame] = answer
+        for i, arg in enumerate(args[:]):
+            try:
+                args[i] = mappings[arg]
+            except KeyError:
+                try:
+                    args[i] = subs_expr[arg]
+                except KeyError:
+                    pass
 
-        eqv = Expression(curr_frame.oper, *args_equiv)
-        if curr_frame == eqv:
-            expr = expr.replace_expr(curr_frame, answer)
-        else:
-            expr = expr.replace_expr(eqv, answer)
-
-        results.append(expr)
-
-    return results
-
-
-def infixRepr(expr):
-    """'Convert the expr into a string in infix form."""
-    if expr.oper == ' ':
-        return str(expr.arg1)
-    if expr.arg2 == None:
-        return '{}{}'.format(expr.oper, infixRepr(expr.arg1))
-    return '({} {} {})'.format(infixRepr(expr.arg1), expr.oper, infixRepr(expr.arg2))
+        try:
+            ans = funcs[stmt.oper](*args)
+        except KeyError:
+            ans = stmt
+        subs_expr[stmt] = ans
+        new_order.append(ans)
+    return new_order
 
 if __name__ == '__main__':
     import doctest

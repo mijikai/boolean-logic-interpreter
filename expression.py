@@ -15,23 +15,23 @@ class Expression(_collections.namedtuple('Expression',
     def __new__(cls, oper, arg1, arg2=None):
         return super().__new__(cls, oper, arg1, arg2)
 
-    def __str__(self):
+    def sexpr(self):
         r"""Returns an s expr representation of the object. If oper is composed
         of whitespace only, return the str of arg1.
 
         Examples:
-        >>> print(Expression(' ', 3))
+        >>> print(Expression(' ', 3).sexpr())
         3
-        >>> print(Expression('-', 3))
+        >>> print(Expression('-', 3).sexpr())
         (- 3)
-        >>> print(Expression('*', 8, 4))
+        >>> print(Expression('*', 8, 4).sexpr())
         (* 8 4)
-        >>> print(Expression('+', Expression('-', 6), 3))
+        >>> print(Expression('+', Expression('-', 6), 3).sexpr())
         (+ (- 6) 3)
         """
 
         values = [self.oper, self.arg1, self.arg2]
-        if self.oper.strip() == '':
+        if self.is_leaf():
             template = '{}'
             values = [self.arg1]
         elif self.arg2 == None:

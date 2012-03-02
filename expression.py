@@ -44,63 +44,7 @@ class Expression(_collections.namedtuple('Expression',
                 values[i] = j.sexpr() 
         return template.format(*values)
 
-    def getsubexpr(self):
-        r"""Returns a tuple composed of Expression objects. If the object has a
-        depth h, the first elements of the tuple are the nodes of the root at
-        level h, the next elements are the nodes at depth h - 1, and so on. The
-        order is arg1 first before arg2
-
         Examples:
-        >>> a = Expression('+', 2, 3)
-        >>> print(*a.getsubexpr(), sep='\n')
-        (+ 2 3)
-        >>> b = Expression('+', a, 4)
-        >>> print(*b.getsubexpr(), sep='\n')
-        (+ 2 3)
-        (+ (+ 2 3) 4)
-        >>> c = Expression('-', 5, a)
-        >>> print(*c.getsubexpr(), sep='\n')
-        (+ 2 3)
-        (- 5 (+ 2 3))
-        >>> d = Expression('*', b, c)
-        >>> print(*d.getsubexpr(), sep='\n')
-        (+ 2 3)
-        (+ 2 3)
-        (+ (+ 2 3) 4)
-        (- 5 (+ 2 3))
-        (* (+ (+ 2 3) 4) (- 5 (+ 2 3)))
-        """
-
-        stack = []
-        current_frame = self
-        subexpr = []
-        type_expr = type(self)
-
-        while current_frame:
-            type_arg1 = type(current_frame.arg1)
-            type_arg2 = type(current_frame.arg2)
-            parents = []
-
-            if type_arg2 == type_expr:
-                subexpr.append(current_frame.arg2)
-                parents.append(current_frame.arg2)
-
-            if type_arg1 == type_expr:
-                subexpr.append(current_frame.arg1)
-                parents.append(current_frame.arg1)
-
-            if parents:
-                parents.reverse()
-                stack.extend(parents)
-
-            if stack:
-                current_frame = stack.pop()
-            else:
-                current_frame = None
-
-        subexpr.reverse()
-        subexpr.append(self)
-        return tuple(subexpr)
 
     def replace_expr(self, expr, value, replaceall=False):
         """Replaces one of the subexpression with value.

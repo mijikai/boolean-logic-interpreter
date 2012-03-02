@@ -44,16 +44,36 @@ class Expression(_collections.namedtuple('Expression',
                 values[i] = j.sexpr() 
         return template.format(*values)
 
+    def __str__(self):
+        """String representation of the expression in infix form.
+        
         Examples:
+            >>> str(Expression(' ', 3))
+            '3'
+            >>> str(Expression('+', 3))
+            '+3'
+            >>> str(Expression('*', 3, 2))
+            '(3 * 2)'
+            >>> str(Expression('-', 4, Expression('*', 3, 2)))
+            '(4 - (3 * 2))'
+            """
 
+        if self.is_leaf():
+            return str(self.arg1)
 
+        infix = [self.arg1, self.oper, self.arg2]
+        if self.arg2 == None:
+            template = '{}{}'
+            infix.pop()
+            infix.reverse()
+        else:
+            template = '({} {} {})'
 
-        Example:
-        >>> a = Expression('+', 'a', 'b')
-        >>> b = Expression('*', 'a', 'b')
-        >>> c = Expression('-', a, b)
-        >>> c.replace_expr(a, 3) == Expression('-', 3, b)
-        True
+        for i, tok in enumerate(infix[:]):
+            infix[i] = str(tok)
+
+        return template.format(*infix)
+
     def evaluation_order(self):
         """Returns a list of the evaluation order of the Expression object.
         When oper is a space, the list will be composed of the value of arg1

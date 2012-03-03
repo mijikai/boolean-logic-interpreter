@@ -71,13 +71,15 @@ class TruthTable:
             truth_table.append(head)
             for mapping in self.var_combination:
                 row = []
-                for formula, value in evaluate(self._expr, bool_funcs_dict, mapping):
+                for formula, value in zip(self.__order, simulate(self.__order, mapping,
+                        bool_funcs_dict)):
                     if formula not in head:
                         head.append(formula)
                     row.append(value)
                 truth_table.append(row)
         else:
-            for formula, value in evaluate(self._expr, bool_funcs_dict):
+            for formula, value in zip(self.__order, simulate(self.__order, mapping,
+                    bool_funcs_dict)):
                 row.append(value)
                 truth_table.append(row)
 
@@ -111,9 +113,11 @@ class TruthTable:
             print('+', end='')
             for i in col_len:
                 print('-' * i, end='+')
-            print('-' * len(j), end='')
-        print('+')
+            print()
 
+        print('|', end='')
+        for col, length in zip(row, col_len):
+            print(str(col).center(length), end='|')
 
         print()
         print('+', end='')

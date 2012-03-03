@@ -4,6 +4,7 @@ from boolean import bool_funcs_dict, CONSTANTS
 from itertools import product
 from expression import Expression, simulate
 
+
 class TruthTable:
     """Generates the truth table for the given string.
 
@@ -62,6 +63,22 @@ class TruthTable:
     def generate(self):
         """Generates the truth table. Returns a list whose first element is a
         the formula and the rest are their corresponding values.
+
+        Examples:
+            >>> TruthTable(Expression(' ', 'a')).generate()
+            [[Expression(oper=' ', arg1='a', arg2=None)], ['T']]
+            >>> TruthTable(Expression('~', 'a')).generate()
+            ...  # doctest: +NORMALIZE_WHITESPACE
+            [['a', Expression(oper='~', arg1='a', arg2=None)],
+             ['T', 'F'],
+             ['F', 'T']]
+            >>> TruthTable(Expression('&', 'a', 'b')).generate()
+            ...  # doctest: +NORMALIZE_WHITESPACE
+            [['a', 'b', Expression(oper='&', arg1='a', arg2='b')],
+             ['T', 'T', 'T'],
+             ['T', 'F', 'F'],
+             ['F', 'T', 'F'],
+             ['F', 'F', 'F']]
         """
         truth_table = []
 
@@ -70,15 +87,15 @@ class TruthTable:
             truth_table.append(head)
             for mapping in self.var_combination:
                 row = []
-                for formula, value in zip(self.__order, simulate(self.__order, mapping,
-                        bool_funcs_dict)):
+                for formula, value in zip(self.__order, simulate(self.__order,
+                    mapping, bool_funcs_dict)):
                     if formula not in head:
                         head.append(formula)
                     row.append(value)
                 truth_table.append(row)
         else:
-            for formula, value in zip(self.__order, simulate(self.__order, mapping,
-                    bool_funcs_dict)):
+            for formula, value in zip(self.__order, simulate(self.__order,
+                mapping, bool_funcs_dict)):
                 row.append(value)
                 truth_table.append(row)
 
@@ -123,3 +140,7 @@ class TruthTable:
         for i in col_len:
             print('-' * i, end='+')
         print()
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

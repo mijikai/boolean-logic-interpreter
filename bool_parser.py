@@ -16,6 +16,7 @@ stack = []
 
 def toExpression(s, loc, tok):
     curr = tok[0]
+    print(s, loc, tok)
     if curr in BINARY:
         args = []
         for i in range(2):
@@ -53,14 +54,15 @@ atom = operand | lpar + expr + rpar
 prev_pattern = atom
 
 atom.setParseAction(toExpression)
-
+from pyparsing import Optional
 for opers in PRECEDENCE:
     pattern_list = []
     # only accepts unary and binary operation
     # as there are no ternary in boolean
     for op in opers:
         if op in UNARY:
-            alternative = OneOrMore(oper_literals[op]) + prev_pattern
+            alternative = Forward()
+            alternative << (oper_literals[op] + (prev_pattern | alternative))
             alternative.setParseAction(toExpression)
             unary_pattern = prev_pattern | alternative
             pattern_list.append(unary_pattern)

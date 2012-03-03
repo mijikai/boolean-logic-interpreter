@@ -27,23 +27,10 @@ class TruthTable:
 
         vars = set()
         stack = []
-        if type(self._expr) == str:
-            vars.add(self._expr)
-        else:
-            stack.append(self._expr)
 
-        while stack:
-            current = stack.pop()
-            for i in (current.arg1, current.arg2):
-                if type(i) == type(current):
-                    stack.append(i)
-                elif i in CONSTANTS or i is None:
-                    pass
-                elif type(i) == str:
-                    vars.add(i)
-                else:
-                    raise Exception("'" + type(i).__name__ +
-                            "' is not a str or Expression")
+        for i in self.__order:
+            if not isinstance(i, Expression) and i not in CONSTANTS:
+                vars.add(i)
 
         vars = list(vars)
         vars.sort()

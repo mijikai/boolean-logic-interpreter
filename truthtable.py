@@ -39,6 +39,8 @@ class TruthTable:
             if (isinstance(i, Expression) and i.is_leaf() and
                     i.arg1 not in CONSTANTS):
                 vars.add(i.arg1)
+            if not isinstance(i, Expression) and i not in CONSTANTS:
+                vars.add(i)
 
         vars = list(vars)
         vars.sort()
@@ -66,7 +68,7 @@ class TruthTable:
 
         Examples:
             >>> TruthTable(Expression(' ', 'a')).generate()
-            [[Expression(oper=' ', arg1='a', arg2=None)], ['T']]
+            [[Expression(oper=' ', arg1='a', arg2=None)], ['T'], ['F']]
             >>> TruthTable(Expression('~', 'a')).generate()
             ...  # doctest: +NORMALIZE_WHITESPACE
             [['a', Expression(oper='~', arg1='a', arg2=None)],

@@ -21,6 +21,14 @@ class TruthTable:
         self._find_variables()
         self._make_combination()
 
+    def _gen_order(self, expr):
+        """Remove redundant expression from the list of statements."""
+        order = expr.evaluation_order()
+        new_order = []
+        for i in order:
+            if i not in new_order:
+                new_order.append(i)
+        self.__order = new_order
     def _find_variables(self):
         # Find all the identifier in the expression. Used in order to determine
         # the possible combination of truth table and assign those some value

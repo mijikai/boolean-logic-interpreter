@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
-from bool_parser import parse
 from boolean import bool_funcs_dict, CONSTANTS
 from itertools import product
-from expression import evaluate, evaluate2, Expression, infixRepr
-from pyparsing import ParseException
-
+from expression import Expression, simulate
 
 class TruthTable:
     """Generates the truth table for the given string.
 
     Data defined:
-    -> vars: Identifiers in the string
-    -> var_combination: A tuple of dictionary of the possilbe combination of
-        the truth value
+        vars: Identifiers in the string
+        var_combination: A tuple of dictionary of the possilbe combination of
+            the truth value
     """
 
     def __init__(self, expr):
@@ -29,6 +26,7 @@ class TruthTable:
             if i not in new_order:
                 new_order.append(i)
         self.__order = new_order
+
     def _find_variables(self):
         # Find all the identifier in the expression. Used in order to determine
         # the possible combination of truth table and assign those some value

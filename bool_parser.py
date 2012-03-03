@@ -16,7 +16,6 @@ stack = []
 
 def toExpression(s, loc, tok):
     curr = tok[0]
-    print(s, loc, tok)
     if curr in BINARY:
         args = []
         for i in range(2):

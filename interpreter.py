@@ -16,9 +16,8 @@ class TruthTable:
         the truth value
     """
 
-    def __init__(self, string):
-        self._string = string
-        self._expr = parse(string)
+    def __init__(self, expr):
+        self._gen_order(expr)
         self._find_variables()
         self._make_combination()
 

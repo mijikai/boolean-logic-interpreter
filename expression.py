@@ -41,12 +41,12 @@ class Expression(_collections.namedtuple('Expression',
             template = '({} {} {})'
         for i, j in enumerate(values[:]):
             if isinstance(j, self.__class__):
-                values[i] = j.sexpr() 
+                values[i] = j.sexpr()
         return template.format(*values)
 
     def __str__(self):
         """String representation of the expression in infix form.
-        
+
         Examples:
             >>> str(Expression(' ', 3))
             '3'
@@ -79,7 +79,7 @@ class Expression(_collections.namedtuple('Expression',
         When oper is a space, the list will be composed of the value of arg1
         otherwise, the list will be composed of the evaluation order of arg1,
         evaluation order of arg2 and the object itself in order.
-        
+
         Examples:
         >>> Expression(' ', 'a').evaluation_order()
         [Expression(oper=' ', arg1='a', arg2=None)]
@@ -93,8 +93,10 @@ class Expression(_collections.namedtuple('Expression',
         [4, 5, Expression(oper='*', arg1=4, arg2=5)]
         >>> c = Expression('/', a, 'a')
 
-        >>> c.evaluation_order()
-        [3, 2, Expression(oper='+', arg1=3, arg2=2), 'a', Expression(oper='/', arg1=Expression(oper='+', arg1=3, arg2=2), arg2='a')]
+        >>> c.evaluation_order() # doctest: +NORMALIZE_WHITESPACE
+        [3, 2, Expression(oper='+', arg1=3, arg2=2), 'a',
+            Expression(oper='/',
+                arg1=Expression(oper='+', arg1=3, arg2=2), arg2='a')]
         """
 
         args = [self.arg1, self.arg2]
@@ -126,9 +128,9 @@ def simulate(order, mappings={}, funcs={}):
         order controls the simplification and substitution.
     mappings - a dictionary in which an element from order or arg1 or arg2 of
         the object will be replaced by the value of the key equal to that
-        element. 
+        element.
     funcs - a dictionary in which the oper will be match against the key of the
-        dictionary. The value must be a callable object. 
+        dictionary. The value must be a callable object .
 
     If an element in ``order`` is not an ``Expression``, the value
     corresponding to the element will substitute that element. If an element is
@@ -142,7 +144,7 @@ def simulate(order, mappings={}, funcs={}):
 
     Returns a list equal to the length of ``order`` composed of evaluated
     values correspond to the aformentioned list.
-        
+
     Examples:
         >>> mappings = {'a': 3, 'b': 8, 'c': 4}
         >>> funcs = {'+': lambda x, y: x + y, '*': lambda x, y: x * y}

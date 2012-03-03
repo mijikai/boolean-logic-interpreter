@@ -88,28 +88,29 @@ class TruthTable:
         truth_table = self.generate()
         head = truth_table[0]
         truth_table[0:1] = []
-        length_row = sum(map(len, head)) + len(head) + 1
+        col_len = []
+
         for i, j in enumerate(head[:]):
-            head[i] = infixRepr(j)
-        for j in head:
-            print('+', end='')
-            print('-' * len(j), end='')
-        print('+')
-        for j in head:
-            print('|', end='')
-            print(j, end='')
-        print('|')
-        for j in head:
-            print('+', end='')
-            print('-' * len(j), end='')
-        print('+')
+            head[i] = str(j)
+            col_len.append(len(head[i]) + 2)
+
+        self._print_row(head, col_len, True)
         for row in truth_table:
-            for head_col, col in zip(head, row):
-                print('|', end='')
-                print(col.rjust(len(head_col)), end='')
-            print('|')
-        for j in head:
+            self._print_row(row, col_len)
+
+    def _print_row(self, row, col_len, upper=False):
+        """Print the row of the table and border it.
+
+        row - an iterable of fixed length
+        col_len - the width of each cell
+        upper - determine whether the upper border will be printed.
+            Default is False.
+        """
+
+        if upper:
             print('+', end='')
+            for i in col_len:
+                print('-' * i, end='+')
             print('-' * len(j), end='')
         print('+')
 

@@ -68,7 +68,7 @@ class TruthTable:
 
         Examples:
             >>> TruthTable(Expression(' ', 'a')).generate()
-            [[Expression(oper=' ', arg1='a', arg2=None)], ['T']]
+            [[Expression(oper=' ', arg1='a', arg2=None)], ['T'], ['F']]
             >>> TruthTable(Expression('~', 'a')).generate()
             ...  # doctest: +NORMALIZE_WHITESPACE
             [['a', Expression(oper='~', arg1='a', arg2=None)],

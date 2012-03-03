@@ -115,21 +115,8 @@ class TruthTable:
         print('+')
 
 
-if __name__ == '__main__':
-    while True:
-        try:
-            string = input('boolean> ')
-        except EOFError:
-            break
-        else:
-            string = string.strip()
-
-        if not string:
-            continue
-
-        try:
-            table = TruthTable(string)
-        except ParseException as ex:
-            print(ex)
-        else:
-            table.display_table()
+        print()
+        print('+', end='')
+        for i in col_len:
+            print('-' * i, end='+')
+        print()

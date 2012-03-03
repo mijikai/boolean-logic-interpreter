@@ -35,8 +35,9 @@ class TruthTable:
         stack = []
 
         for i in self.__order:
-            if not isinstance(i, Expression) and i not in CONSTANTS:
-                vars.add(i)
+            if (isinstance(i, Expression) and i.is_leaf() and
+                    i.arg1 not in CONSTANTS):
+                vars.add(i.arg1)
 
         vars = list(vars)
         vars.sort()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from functools import wraps
 
 TRUE = 'T'
 FALSE = 'F'
@@ -24,15 +25,13 @@ PRECEDENCE = (
 
 
 def args_constant_check(func):
+    @wraps(func)
     def checker(*args, **kwargs):
         for arg in args:
             if arg not in CONSTANTS:
                 raise ValueError('invalid argument given for {}: {}'.format(
                         checker.__name__, str(arg)))
         return func(*args, **kwargs)
-
-    checker.__name__ = func.__name__
-    checker.__doc__ = func.__doc__
 
     return checker
 

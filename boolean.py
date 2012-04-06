@@ -37,6 +37,7 @@ def args_constant_check(func):
 
 
 def return_constant_check(func):
+    @wraps(func)
     def checker(*args, **kwargs):
         return_value = func(*args, **kwargs)
         if return_value not in CONSTANTS:
